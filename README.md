@@ -1,5 +1,5 @@
 # Trusty Music Fabricator (TMF)
-Generate a Spotify playlist by texting a Twilio-owned phone number, based on your current music interests.
+Generate a Spotify playlist based on your current music interests by texting a Twilio-owned phone number.
 Easy AWS-based serverless deployment that is completely pay-as-you-use (besides Spotify account and Twilio number, see their free trial).
 
 ## Setup Instructions
