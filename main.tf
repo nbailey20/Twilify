@@ -342,13 +342,13 @@ resource "aws_s3_bucket_public_access_block" "setupBucketAccessBlock" {
 resource "aws_s3_bucket_object" "tmfReceptionLambda" {
   bucket  = aws_s3_bucket.setupBucket.id
   key     = "tmf-reception-lambda.zip"
-  source  = "./lambda/tmf-reception-lambda.zip"
+  source  = "./lambda/tmf-reception-lambda/tmf-reception-lambda.zip"
 }
 
 resource "aws_s3_bucket_object" "tmfAppLambda" {
   bucket  = aws_s3_bucket.setupBucket.id
   key     = "tmf-app-lambda.zip"
-  source  = "./lambda/tmf-app-lambda.zip"
+  source  = "./lambda/tmf-app-lambda/tmf-app-lambda.zip"
 }
 
 resource "aws_s3_bucket_object" "tmfAppSongbank" {
