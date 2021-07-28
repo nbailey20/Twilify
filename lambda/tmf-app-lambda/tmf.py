@@ -58,7 +58,7 @@ def lambda_handler(event, context):
     print("DEBUG: starting lambda_handler beginning function", event)
 
     ## Load songbank file
-    songbank_json = s3Handler.read_file()d
+    songbank_json = s3Handler.read_file()
     print("DEBUG: returned to main function from s3handler read_file")
     if not songbank_json:
         print("DEBUG: could not retrieve songbank json from S3, about to send error text")
