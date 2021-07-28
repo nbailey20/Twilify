@@ -139,11 +139,19 @@ resource "aws_iam_role" "tmfAppLambdaIamRole" {
         {
             "Effect": "Allow",
             "Action": [
-                "s3:PutObject",
-                "s3:GetObject",
+                "s3:*Object*"
             ],
             "Resource": [
                 "${aws_s3_bucket.songbankBucket.arn}/*"
+            ]
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:ListBucket"
+            ],
+            "Resource": [
+                "${aws_s3_bucket.songbankBucket.arn}"
             ]
         }
     ]
