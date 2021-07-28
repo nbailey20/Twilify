@@ -6,7 +6,7 @@ from spotipy.oauth2 import SpotifyOAuth
 
 ## Function to return an API client and refresh token given Spotify Oauth creds
 def auth_spotify(refresh_token):
-    print("made it to auth spotify")
+    print("DEBUG: made it to auth spotify function with refresh token", refresh_token)
     scope = "user-top-read playlist-modify-private" 
 
     sp_oauth = SpotifyOAuth(
@@ -16,22 +16,27 @@ def auth_spotify(refresh_token):
         scope=scope,
         cache_path=None,
     )
-    print("got oauth client")
+    print("DEBUG: got oauth client")
 
     ret_list = [False,False] ## API client, next_refresh_token
+    print("DEBUG: about to refresh access token with refresh token")
     try:
         token_info = sp_oauth.refresh_access_token(refresh_token)
     except:
-        print("no access token")
+        print("DEBUG: could not get access token or next refresh, returning False")
         return ret_list
 
+    print("DEBUG: got token info", token_info)
     access_token = token_info["access_token"]
     ret_list[1] = token_info["refresh_token"]
 
+    print("DEBUG: about to create spotipy client")
     try:
         ret_list[0] = spotipy.Spotify(auth=access_token)
     except:
+        print("DEBUG: could not create spotipy clieent with access token", access_token)
         return ret_list
+    print("DEBUG: successfully returning spotipy client back to main", ret_list)
     return ret_list
 
 
