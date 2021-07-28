@@ -139,7 +139,8 @@ resource "aws_iam_role" "tmfAppLambdaIamRole" {
         {
             "Effect": "Allow",
             "Action": [
-                "s3:*Object*"
+                "s3:GetObject",
+                "s3:PutObject"
             ],
             "Resource": [
                 "${aws_s3_bucket.songbankBucket.arn}/*"
@@ -151,7 +152,7 @@ resource "aws_iam_role" "tmfAppLambdaIamRole" {
                 "s3:ListBucket"
             ],
             "Resource": [
-                "${aws_s3_bucket.songbankBucket.arn}"
+                aws_s3_bucket.songbankBucket.arn
             ]
         }
     ]
@@ -475,7 +476,7 @@ resource "aws_lambda_function" "tmfReceptionLambda" {
   function_name = "tmf-reception"
   role          = aws_iam_role.tmfReceptionLambdaIamRole.arn
   handler       = "reception.lambda_handler"
-  timeout       = 260
+  timeout       = 5
   runtime       = "python3.6"
   environment {
     variables = {
@@ -498,7 +499,7 @@ resource "aws_lambda_function" "tmfAppLambda" {
   function_name = "tmf"
   role          = aws_iam_role.tmfAppLambdaIamRole.arn
   handler       = "tmf.lambda_handler"
-  timeout       = 25
+  timeout       = 40
   runtime       = "python3.6"
   vpc_config {
     security_group_ids = [aws_security_group.lambdaSg.id]

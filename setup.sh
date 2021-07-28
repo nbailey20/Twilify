@@ -9,5 +9,5 @@ cd ../tmf-reception-lambda
 7z a tmf-reception-lambda.zip *.py
 cd ../..
 
-terraform init
-terraform plan
+#terraform init
+#terraform plan

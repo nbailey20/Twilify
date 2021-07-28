@@ -1,11 +1,24 @@
-import json, sys, os
+import json, sys, os, time
 import musicscraper, playlistHandler, twilioHandler, s3Handler
 from random import randrange
+import urllib
 
 ## Genres we don't want event notifications for, even if the artist is popular af
 BLACKLIST = ["black-metal", "bluegrass", "death-metal", "country", "heavy-metal", "metal", "alternative country"]
 
 
+def test_network_connectivity():
+    i = 0
+    while i < 10:
+        try:
+            urllib.request.urlopen("https://s3.us-east-1.amazonaws.com", timeout=1)
+            return True
+        except: 
+            print("DEBUG: failed network connectivity test " + str(i))
+            time.sleep(3)
+            i += 1
+            continue
+    return False
 
 
 def get_song_rec_from_seeds(sp, songbank):
@@ -56,6 +69,14 @@ def get_song_rec_from_seeds(sp, songbank):
 ############################################################# START MAIN CODE BLOCK ##########################################################
 def lambda_handler(event, context):
     print("DEBUG: starting lambda_handler beginning function", event)
+
+    ## Test network connectivity
+    print("DEBUG: about to test network connectivity")
+    if not test_network_connectivity():
+        print("DEBUG: aborting after no connectivity multiple tries")
+        twilioHandler.send_error_message("Could not connect to Internet after multiple tries, aborting.")
+        sys.exit(1)
+    print("DEBUG: network connectivity established")
 
     ## Load songbank file
     songbank_json = s3Handler.read_file()
@@ -138,7 +159,3 @@ def lambda_handler(event, context):
         "status": "200",
         "body": "success"
     }
-
-
-
-#print(lambda_handler("", ""))

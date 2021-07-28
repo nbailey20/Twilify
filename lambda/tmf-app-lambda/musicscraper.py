@@ -111,7 +111,6 @@ def load_songbank(sp, songbank_json):
 ##  adds recently recommended songs to playlistTracks
 ##  updates Spotify refresh token for next invocation
 def save_songbank(songbank, songs_to_add, next_refresh_token):
-
     ## Update neutral song refresh count for songs still in playlist
     for song in songbank["playlistTracks"]:
         song["count"] += 1
@@ -121,9 +120,12 @@ def save_songbank(songbank, songs_to_add, next_refresh_token):
 
     ## Update refresh token with next value
     songbank["refreshToken"] = next_refresh_token
+    print("DEBUG: updated songbank locally, about to save to S3")
 
     if s3Handler.write_file(songbank):
+        print("DEBUG: successfully saved songbank to S3")
         return True
+    print("DEBUG: did not successfully write file to S3")
     return False
 
 
