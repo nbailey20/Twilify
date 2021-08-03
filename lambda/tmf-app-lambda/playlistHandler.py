@@ -63,7 +63,8 @@ def load_playlist(DEBUG, sp, songbank):
         else:
             index += 1
 
-    if DEBUG: print("DEBUG: successfully retrieved valid tracks", saved_tracks)
+    songbank["playlistTracks"] = saved_tracks
+    if DEBUG: print("DEBUG: successfully retrieved valid tracks and updated local songbank", saved_tracks)
     return saved_tracks
 
 
