@@ -34,4 +34,7 @@ variable "songbank_cycles_before_rebuild" {
   default = 6
 }
 
+variable "debug" {
+  default = false
+}
 

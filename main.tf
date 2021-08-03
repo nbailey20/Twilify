@@ -507,20 +507,21 @@ resource "aws_lambda_function" "tmfAppLambda" {
   }
   environment {
     variables = {
-      client_id                 = var.client_id
-      client_secret             = var.client_secret
-      rec_limit                 = var.rec_limit
-      bucket_name               = aws_s3_bucket.songbankBucket.bucket
-      songbank_file_name        = var.songbank_file_name
-      spotify_user              = var.spotify_user
-      playlist_name             = var.playlist_name
-      neutral_song_refresh_rate = var.neutral_song_refresh_rate
-      twilio_account_sid        = var.twilio_account_sid
-      twilio_auth_token         = var.twilio_auth_token
-      twilio_number             = var.twilio_number
-      user_number               = var.user_number
-      num_songs_in_playlist     = var.num_songs_in_playlist
+      client_id                      = var.client_id
+      client_secret                  = var.client_secret
+      rec_limit                      = var.rec_limit
+      bucket_name                    = aws_s3_bucket.songbankBucket.bucket
+      songbank_file_name             = var.songbank_file_name
+      spotify_user                   = var.spotify_user
+      playlist_name                  = var.playlist_name
+      neutral_song_refresh_rate      = var.neutral_song_refresh_rate
+      twilio_account_sid             = var.twilio_account_sid
+      twilio_auth_token              = var.twilio_auth_token
+      twilio_number                  = var.twilio_number
+      user_number                    = var.user_number
+      num_songs_in_playlist          = var.num_songs_in_playlist
       songbank_cycles_before_rebuild = var.songbank_cycles_before_rebuild
+      debug                          = var.debug
     }
   }
 }

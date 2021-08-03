@@ -4,13 +4,11 @@ Easy AWS-based serverless deployment that is completely pay-as-you-use (besides 
 
 ## Setup Instructions
 1. Create terraform.tfvars file with information needed in variables.tf - AWS account, spotify account, Twilio number, etc
-2. Run setup.sh script to detect Terraform issues
-3. Run 'terraform apply' to build app in AWS
-4. Copy tmf-invoke-url output from terraform apply and add as Messaging Webhook when a message comes in for the Twilio number
-5. Text your Trusty Music Fabricator to say hi, and enjoy :)  - expect a few mins delay to keep AWS cost at a minimum
-6. Terraform destroy to get rid of everything in AWS if you want to 'uninstall', don't forget to release Twilio number!
+2. Run setup.sh script to build app in AWS and update Twilio phone number webhook URL
+3. Text your Trusty Music Fabricator to say hi, and enjoy :)  - expect a few mins delay to keep AWS cost at a minimum
+4. Terraform destroy to get rid of everything in AWS if you want to 'uninstall', don't forget to release Twilio number!
 
-## Current Version: 0.2.0
+## Current Version: 0.3.0
 Deployment into AWS and integration with Twilio webhook is working. Initial playlist is created with name "Trusty Music Fabricator" with correct number of songs, however reported failures after several generations.
 
 ## Usage Instructions
@@ -27,4 +25,4 @@ Deployment into AWS and integration with Twilio webhook is working. Initial play
 - TMF can fail when writing new songbank back to S3, need better logging to determine why
 - TMF silently fails when texted during network stack deletion
 - TMF ignores existing Spotify playlists with same name upon app setup, will create new playlist instead of choosing existing (should be variable option to overwrite)
-- Update setup script to invoke Twilio API to update phone number instead of manually copy/pasting with MFA login
+- [RESOLVED] Update setup script to invoke Twilio API to update phone number instead of manually copy/pasting with MFA login
