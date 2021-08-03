@@ -136,7 +136,8 @@ def lambda_handler(event, context):
     if DEBUG: print("DEBUG: about to call playlisthandler load playlist")
     playlistTracks = playlistHandler.load_playlist(DEBUG, sp, songbank) 
     if DEBUG: print("DEBUG: returned to main from playlisthandler load playlist call")
-    if not playlistTracks:
+    ## Check explicitly for False since empty list is also False
+    if playlistTracks is False:
         print("DEBUG: could not retrieve tracks from playlist, about to send error text")
         twilioHandler.send_error_message("Cannot load playlist, aborting.")
         sys.exit(1)
