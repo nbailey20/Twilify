@@ -180,7 +180,7 @@ def lambda_handler(event, context):
         twilioHandler.send_completed_message(DEBUG, "No tracks to update this time!")
     else:
         if DEBUG: print("DEBUG: successfully completed TMF iteration, about to send success text")
-        twilioHandler.send_completed_message(DEBUG, "Enjoy your new songs :)")
+        twilioHandler.send_completed_message(DEBUG, "Enjoy your new " + str(num_songs_to_add) + " songs :)")
     return {
         "status": "200",
         "body": "success"
