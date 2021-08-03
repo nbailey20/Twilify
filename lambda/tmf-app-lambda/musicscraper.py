@@ -154,7 +154,7 @@ def save_songbank(DEBUG, songbank, songs_to_add, next_refresh_token):
     ## Save songbank to S3 for next invocation
     if DEBUG: print("DEBUG: updated songbank locally, about to save to S3")
     if s3Handler.write_file(songbank):
-        if DEBUG: print("DEBUG: successfully saved songbank to S3")
+        if DEBUG: print("DEBUG: successfully saved songbank to S3", songbank)
         return True
     if DEBUG: print("DEBUG: did not successfully write file to S3")
     return False
