@@ -52,7 +52,7 @@ def load_playlist(DEBUG, sp, songbank):
     index = 0
     while index < len(saved_tracks):
         st = saved_tracks[index]
-        if st["count"] >= int(os.environ["neutral_song_refresh_rate"]-1):
+        if st["count"] >= int(os.environ["neutral_song_refresh_rate"])-1:
             try:
                 sp.user_playlist_remove_all_occurrences_of_tracks(os.environ["spotify_user"], playlist_id, [st["id"]])
                 saved_tracks = saved_tracks[:index] + saved_tracks[index+1:]
