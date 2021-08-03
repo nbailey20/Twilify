@@ -1,11 +1,24 @@
-import json, sys, os
+import json, sys, os, time
 import musicscraper, playlistHandler, twilioHandler, s3Handler
 from random import randrange
+import urllib
 
 ## Genres we don't want event notifications for, even if the artist is popular af
 BLACKLIST = ["black-metal", "bluegrass", "death-metal", "country", "heavy-metal", "metal", "alternative country"]
 
 
+def test_network_connectivity():
+    i = 0
+    while i < 10:
+        try:
+            urllib.request.urlopen("https://s3.us-east-1.amazonaws.com", timeout=1)
+            return True
+        except: 
+            print("DEBUG: failed network connectivity test " + str(i))
+            time.sleep(3)
+            i += 1
+            continue
+    return False
 
 
 def get_song_rec_from_seeds(sp, songbank):
@@ -55,46 +68,59 @@ def get_song_rec_from_seeds(sp, songbank):
 
 ############################################################# START MAIN CODE BLOCK ##########################################################
 def lambda_handler(event, context):
-    print("am I alive?")
+    print("DEBUG: starting lambda_handler beginning function", event)
+
+    ## Test network connectivity
+    print("DEBUG: about to test network connectivity")
+    if not test_network_connectivity():
+        print("DEBUG: aborting after no connectivity multiple tries")
+        twilioHandler.send_error_message("Could not connect to Internet after multiple tries, aborting.")
+        sys.exit(1)
+    print("DEBUG: network connectivity established")
 
     ## Load songbank file
     songbank_json = s3Handler.read_file()
-    print("survived s3handler call")
+    print("DEBUG: returned to main function from s3handler read_file")
     if not songbank_json:
+        print("DEBUG: could not retrieve songbank json from S3, about to send error text")
         twilioHandler.send_error_message("Could not read songbank file from S3")
-        print("survived twilio call")
         sys.exit(1)
     current_refresh_token = songbank_json["refreshToken"]
-    print("got a refresh token")
+    print("DEBUG: successfully retrieved saved refresh token from S3", current_refresh_token)
 
     ## Authenticate to Spotify
+    print("DEBUG: about to call musicscraper auth spotify from main")
     sp, next_refresh_token = musicscraper.auth_spotify(current_refresh_token)
-    print("survived auth spotify")
+    print("DEBUG: back to main from musicscraper auth spotify call")
     if not next_refresh_token:
+        print("DEBUG: could not retrieve next refresh token from auth spotify, about to send error text")
         twilioHandler.send_error_message("Could not get new access token from Spotify")
         sys.exit(1)
     if not sp:
+        print("DEBUG: could not retrieve api client object from auth spotify call, about to send error text")
         twilioHandler.send_error_message("Could not create API client with Spotify token")
         sys.exit(1)
 
     ## Initialize Songbank
     ## API client needed to create playlist if first time
     songbank = musicscraper.load_songbank(sp, songbank_json)
-    print("survived songbank load")
-    print(songbank)
+    print("DEBUG: back to main from musicscraper load songbank call", songbank)
     if not songbank:
+        print("DEBUG: did not return anything from load songbank call, about to send error text")
         twilioHandler.send_error_message("Cannot load songbank, aborting.")
         sys.exit(1)
 
     ## Load playlist information
     playlistTracks = playlistHandler.load_playlist(sp, songbank) 
-    print("survived playlistload")
+    print("DEBUG: returned to main from playlisthandler load playlist call")
     if playlistTracks is False:
+        print("DEBUG: could not retrieve playlisttracks from load playlist, about to send error text")
         twilioHandler.send_error_message("Cannot load playlist, aborting.")
         sys.exit(1)
 
     ## if no new songs need to be added, we're done!
     num_songs_to_add = int(os.environ["num_songs_in_playlist"]) - len(playlistTracks) 
+    print("DEBUG: will attempt to add " + str(num_songs_to_add) + " songs to the playlist")
     if num_songs_to_add == 0:
         return {
             "status": "200",
@@ -104,31 +130,32 @@ def lambda_handler(event, context):
     ## For each song to add, get a recommendation
     songs_to_add = []
     for _ in range(num_songs_to_add):
+        print("DEBUG: about to get song rec from seeds")
         new_song_id, songbank = get_song_rec_from_seeds(sp, songbank)
         songs_to_add.append(new_song_id)
-    print("got song recs")
-    print(songs_to_add)
+    print("DEBUG: finished collecting song recs", songs_to_add)
 
     ## Add new songs to songbank and write data to S3 for next time
     ## update Spotify refresh token for next invocation
+    print("DEBUG: about to call musicscraper save songbank to S3")
     if not musicscraper.save_songbank(songbank, songs_to_add, next_refresh_token):
+        print("DEBUG: could not save songbank to s3, about to send error text")
         twilioHandler.send_error_message("Could not save songbank to S3")
         sys.exit(1)
-    print("survived savesongbank")
+    print("DEBUG: successfully saved songbank to S3")
 
     ## Add recommended songs to Spotify playlist
+    print("DEBUG: about to call playlisthandler to update playlist in Spotify")
     if not playlistHandler.save_playlist(sp, songbank['playlistId'], songs_to_add):
+        print("DEBUG: could not save Spotify playlist, about to send error text")
         twilioHandler.send_error_message("Updated songbank with new content but could not push to playlist")
         sys.exit(1)
 
 
     ## All done!
+    print("DEBUG: successfully completed TMF iteration, about to send success text")
     twilioHandler.send_completed_message()
     return {
         "status": "200",
         "body": "success"
     }
-
-
-
-print(lambda_handler("", ""))

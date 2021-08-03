@@ -5,12 +5,13 @@ import eventParser
 
     
 def lambda_handler(event, context):
-    print("Received event: " + str(event))
+    print("DEBUG: starting TMF reception main function, Received event: " + str(event))
 
     ## parse event type
     event_type = eventParser.parse_event(event)
     if not event_type:
         return
+    print("DEBUG: parsed event type as", event_type)
 
     ## if user texted for more music, start creation of network stack
     if event_type == "sms":
@@ -33,6 +34,7 @@ def lambda_handler(event, context):
         except botocore.exceptions.ClientError as ex:
             print(ex)
             return failure_response_text
+        print("DEBUG: about to return success text", success_response_text)
         return success_response_text
 
 
