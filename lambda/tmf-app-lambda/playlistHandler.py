@@ -69,9 +69,11 @@ def load_playlist(DEBUG, sp, songbank):
 
 
 def save_playlist(sp, playlist_id, tracks_to_add):
-    try:
-        sp.user_playlist_add_tracks(os.environ["spotify_user"], playlist_id, tracks_to_add)
-    except:
-        return False
+    ## If no tracks to add, we're done
+    if len(tracks_to_add) > 0:
+        try:
+            sp.user_playlist_add_tracks(os.environ["spotify_user"], playlist_id, tracks_to_add)
+        except:
+            return False
     return True
 

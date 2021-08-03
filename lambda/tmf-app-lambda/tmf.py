@@ -143,18 +143,10 @@ def lambda_handler(event, context):
         sys.exit(1)
 
 
-    ## if no new songs need to be added, we're done!
+    ## For each song to add, get a recommendation
     num_songs_to_add = int(os.environ["num_songs_in_playlist"]) - len(playlistTracks) 
     if DEBUG: print("DEBUG: will attempt to add " + str(num_songs_to_add) + " songs to the playlist")
-    if num_songs_to_add == 0:
-        if DEBUG: print("DEBUG: no tracks to add to playlist, texting user TMF has nothing to do")
-        twilioHandler.send_completed_message("No tracks to update this time!")
-        return {
-            "status": "200",
-            "body":   "success"
-        }
 
-    ## For each song to add, get a recommendation
     songs_to_add = []
     for _ in range(num_songs_to_add):
         if DEBUG: print("DEBUG: about to get song rec from seeds")
@@ -172,7 +164,6 @@ def lambda_handler(event, context):
         if DEBUG: print("DEBUG: could not save songbank to s3, about to send error text")
         twilioHandler.send_error_message("Could not save songbank to S3")
         sys.exit(1)
-    if DEBUG: print("DEBUG: successfully saved songbank to S3")
 
 
     ## Add recommended songs to Spotify playlist
@@ -184,8 +175,12 @@ def lambda_handler(event, context):
 
 
     ## All done!
-    if DEBUG: print("DEBUG: successfully completed TMF iteration, about to send success text")
-    twilioHandler.send_completed_message("Enjoy your new songs :)")
+    if num_songs_to_add == 0:
+        if DEBUG: print("DEBUG: no tracks to add to playlist, texting user TMF has nothing to do")
+        twilioHandler.send_completed_message("No tracks to update this time!")
+    else:
+        if DEBUG: print("DEBUG: successfully completed TMF iteration, about to send success text")
+        twilioHandler.send_completed_message("Enjoy your new songs :)")
     return {
         "status": "200",
         "body": "success"
