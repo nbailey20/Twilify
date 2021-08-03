@@ -21,4 +21,3 @@ token=$(terraform output -raw token)
 curl -XPOST https://api.twilio.com/2010-04-01/Accounts/$account/IncomingPhoneNumbers/$phone.json \
     --data-urlencode "SmsUrl=$url" \
     -u "$account:$token"
-    
