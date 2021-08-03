@@ -7,26 +7,31 @@ def write_file(data):
     try:
         obj = s3.Object(os.environ["bucket_name"], os.environ["songbank_file_name"])
         obj.put(Body=(bytes(json.dumps(data).encode('utf-8'))))
-    except ClientError as e:
-        print(e)
+    except:
         return False
     return True
 
 
 
 ## Returns file contents if successful, False otherwise
-def read_file():
-    print("DEBUG: entered s3handler read file function")
+def read_file(DEBUG = False):
+    if DEBUG: print("DEBUG: entered s3handler read file function")
     s3 = boto3.client('s3')
-    print("DEBUG: about to retrieve songbank object from S3")
-   # try:
-    res = s3.get_object(Bucket=os.environ["bucket_name"], Key=os.environ["songbank_file_name"])
-    print("DEBUG: successfully retrieved songbank object from S3", res)
-    file_content = res['Body'].read().decode('utf-8')
-    json_content = json.loads(file_content)
-    print("DEBUG: successfully loaded songbank")
-    #except ClientError as e:
-    #print(e)
-    #    return False
+    if DEBUG: print("DEBUG: about to retrieve songbank object from S3")
+    try:
+        res = s3.get_object(Bucket=os.environ["bucket_name"], Key=os.environ["songbank_file_name"])
+        if DEBUG: print("DEBUG: successfully retrieved songbank object from S3", res)
+    except:
+        if DEBUG: print("DEBUG: could not make s3 get object call")
+        return False
+
+    if DEBUG: print("DEBUG: about to try and load songbank")
+    try:
+        file_content = res['Body'].read().decode('utf-8')
+        json_content = json.loads(file_content)
+        if DEBUG: print("DEBUG: successfully loaded songbank")
+    except:
+        if DEBUG: print("DEBUG: could not load songbank from file")
+        return False
     return json_content
 
