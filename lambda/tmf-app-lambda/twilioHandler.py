@@ -16,13 +16,13 @@ def send_error_message(message):
 
 
 
-def send_completed_message():
+def send_completed_message(message):
     account_sid = os.environ["twilio_account_sid"]
     auth_token = os.environ["twilio_auth_token"]
     client = Client(account_sid, auth_token)
 
     client.messages.create(
-        body="TMF Song Generation Complete!:\nEnjoy your new songs :)",
+        body="TMF Song Generation Complete!:\n" + message,
         from_=os.environ["twilio_number"],
         to=os.environ["user_number"]
     )
