@@ -1,22 +1,24 @@
+## Handles Spotify playlist operations
+
 import spotipy
 import json, os
 
 
-def create_new_playlist(sp):
+def create_new_playlist(DEBUG, sp):
     try:
         res = sp.user_playlist_create(os.environ["spotify_user"], os.environ["playlist_name"], public=False) 
         playlist_id = res["id"]
+        if DEBUG: print("DEBUG: successfully created playlist", playlist_id)
+        return playlist_id
     except:
-        return False
-    return playlist_id
-
-
-
-
-
+        if DEBUG: print("DEBUG: could not create new Spotify playlist")
+        return ""
+        
+    
 ## Function to return current, non-expired songs in Spotify playlist and local songbank
 ##  based on neutral refresh count and manual playlist deletes
 def load_playlist(DEBUG, sp, songbank):
+    if DEBUG: print("DEBUG: trying to load Spotify playlist")
     playlist_id = songbank["playlistId"]
     saved_tracks = songbank["playlistTracks"]
 
@@ -69,12 +71,15 @@ def load_playlist(DEBUG, sp, songbank):
 
 
 
-def save_playlist(sp, playlist_id, tracks_to_add):
+def save_playlist(DEBUG, sp, playlist_id, tracks_to_add):
+    if DEBUG: print("DEBUG: trying to update Spotify playlist with new tracks")
     ## If no tracks to add, we're done
     if len(tracks_to_add) > 0:
         try:
             sp.user_playlist_add_tracks(os.environ["spotify_user"], playlist_id, tracks_to_add)
+            if DEBUG: print("DEBUG: successfully updated playlist")
         except:
+            if DEBUG: print("DEBUG: could not update playlist")
             return False
     return True
 
