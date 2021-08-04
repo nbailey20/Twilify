@@ -83,7 +83,7 @@ def lambda_handler(event, context):
 
 
     ## Add recommended songs to Spotify playlist
-    if not playlistHandler.save_playlist(sp, songbank["playlistId"], songs_to_add):
+    if not playlistHandler.save_playlist(DEBUG, sp, songbank["playlistId"], songs_to_add):
         if DEBUG: print("DEBUG: could not save Spotify playlist, about to send error text")
         twilioHandler.send_error_message("Updated songbank with new content but could not push to playlist")
         sys.exit(1)
