@@ -1,7 +1,7 @@
 ## Handles all S3 read/write operations with network connectivity checks
 
 import boto3, json, os, urllib, time
-
+from botocore.client import Config
 
 def test_network_connectivity(DEBUG):
     i = 0
@@ -22,7 +22,8 @@ def test_network_connectivity(DEBUG):
 
 ## Taken from boto3 example, returns True if upload successful, else False
 def write_file(DEBUG, data):
-    s3 = boto3.resource('s3')
+    config = Config(connect_timeout=3, retries={'max_attempts': 2})
+    s3 = boto3.resource('s3', config=config)
     if DEBUG: print("DEBUG: testing network connectivity before writing local songbank to S3")
     if test_network_connectivity(DEBUG):
         if DEBUG: print("DEBUG: about to save local songbank to S3")
@@ -42,7 +43,8 @@ def write_file(DEBUG, data):
 def read_file(DEBUG):
     ## Read object from S3 after checking network connection
     if DEBUG: print("DEBUG: about to retrieve songbank object from S3")
-    s3 = boto3.client('s3')
+    config = Config(connect_timeout=3, retries={'max_attempts': 2})
+    s3 = boto3.client('s3', config=config)
     if test_network_connectivity(DEBUG):
         try:
             res = s3.get_object(Bucket=os.environ["bucket_name"], Key=os.environ["songbank_file_name"])
