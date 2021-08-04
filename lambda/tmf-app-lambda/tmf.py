@@ -6,7 +6,9 @@ import urllib
 
 ## Genres we don't want event notifications for, even if the artist is popular af
 #BLACKLIST = ["black-metal", "bluegrass", "death-metal", "country", "heavy-metal", "metal", "alternative country"]
-DEBUG = os.environ["debug"]
+
+## Terraform bools not capitalized unlike Python
+DEBUG = True if os.environ["debug"] == "true" else False
 
 
 ############################################################# START MAIN CODE BLOCK ##########################################################
