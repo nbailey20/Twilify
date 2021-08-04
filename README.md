@@ -22,11 +22,12 @@ Deployment into AWS and integration with Twilio webhook is working. Initial play
     Reinstalling app usually fixes, update to use trigger for APIGW TF instead of depends per AWS docs
 - Spotify occasionally doesn't want to provide new refresh token which causes error in app - hypothesis: token expiration related, too many frequent texts?
 - [RESOLVED] Songbank keeps track of / increments play count for songs even when user removed them, has no effect on usage but still
-- TMF can fail when writing new songbank back to S3, put object call is timing out - need network connectivity check for all S3 operations
+- [TESTING] TMF can fail when writing new songbank back to S3, put object call is timing out - need network connectivity check for all S3 operations
 - TMF silently fails when texted during network stack deletion - no issue if warmup message works
 - TMF ignores existing Spotify playlists with same name upon app setup, will create new playlist instead of choosing existing (should be variable option to overwrite)
 - [RESOLVED] Update setup script to invoke Twilio API to update phone number instead of manually copy/pasting with MFA login
 - Need ability to specify number of songs via Hello text to TMF - how to go from larger to smaller?
 - Need ability to specify that all songs are replaced via Hello text - reset keyword?
 - Need ability to loosely control playlist via Hello text - specific keyword to include in search query
-- Need ability to accidentally delete spotify playlist and resume without having to recreate songbank
+- Need ability to accidentally delete spotify playlist and resume without having to recreate songbank, overwrite keyword
+- Need ability to temporarily remove cost-saving mode for faster responses for a user-texted amount of time

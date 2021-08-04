@@ -25,7 +25,7 @@ def load_songbank(DEBUG, sp, songbank_json):
         playlist_id = songbank_json["playlistId"]
     except:
         if DEBUG: print("DEBUG: did not find existing playlist ID, creating new playlist")
-        playlist_id = playlistHandler.create_new_playlist(sp)
+        playlist_id = playlistHandler.create_new_playlist(DEBUG, sp)
         
     ## if songbank already exists and isn't expired, return it
     if DEBUG: print("DEBUG: checking for expired songbank")
