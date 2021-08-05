@@ -658,21 +658,3 @@ resource "aws_lambda_permission" "tmfReceptionLambdaSnsPermission" {
   principal     = "sns.amazonaws.com"
   source_arn    = aws_sns_topic.tmfSnsTopic.arn
 }
-
-
-## Outputs to configure Twilio phone number webhook URL for incoming messages
-output "tmf-invoke-url" {
-  value = "${aws_api_gateway_stage.tmfApiStage.invoke_url}/${aws_api_gateway_resource.tmfApiResource.path_part}"
-}
-
-output "account_sid" {
-  value = var.twilio_account_sid
-}
-
-output "number_sid" {
-  value = var.twilio_number_sid
-}
-
-output "token" {
-  value = var.twilio_auth_token
-}
