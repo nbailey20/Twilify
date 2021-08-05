@@ -1,3 +1,5 @@
+## Handles Twilio success / error message operations
+
 from twilio.rest import Client
 import os
 
