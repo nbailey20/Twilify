@@ -19,13 +19,13 @@ Deployment into AWS and integration with Twilio webhook is working. Initial play
 ## Known Bugs / Issues / Needs
 - Spotify refresh token should be saved in SSM Parameter Store as encrypted string, not in S3 with songbank
 - [RESOLVED] Network connectivity sometimes not working when app is invoked due to CloudFormation stack finishing NATGW->IGW resource and route creation immediately beforehand, adding network connectivity test to check and wait a few seconds before trying again
-- TMF doesn't immediately respond with warmup message - Hypothesis: API resource creation in TF is sometimes out of order enough to block Lambda response to text, APIGW returns 500
+- [TESTING] TMF doesn't immediately respond with warmup message - Hypothesis: API resource creation in TF is sometimes out of order enough to block Lambda response to text, APIGW returns 500
     Reinstalling app usually fixes, update to use trigger for APIGW TF instead of depends per AWS docs
 - Spotify occasionally doesn't want to provide new refresh token which causes error in app - hypothesis: token expiration related, too many frequent texts?
 - [RESOLVED] Songbank keeps track of / increments play count for songs even when removed from playlist
 - [RESOLVED] TMF can fail when writing new songbank back to S3, put object call is timing out - network connectivity check at start and max retries/timeouts added for boto3, verified retries via CloudWatch logs
 - [TESTING] Spotify calls can also timeout refreshing token - shorter timeout added, retries needed
-- TMF silently fails when texted during network stack deletion - no issue if warmup message works
+- [TESTING] TMF silently fails when texted during network stack deletion - no issue if warmup message works
 - TMF ignores existing Spotify playlists with same name upon app setup, will create new playlist instead of choosing existing (should be variable option to overwrite)
 - [RESOLVED] Update setup script to invoke Twilio API to update phone number instead of manually copy/pasting with MFA login
 - Need ability to specify number of songs via Hello text to TMF - how to go from larger to smaller? A: use reset keyword or manually remove enough songs to reach desired size
