@@ -26,7 +26,7 @@ echo
 echo "Integrating Twilio phone number messaging with AWS deployment..."
 curl -s -XPOST https://api.twilio.com/2010-04-01/Accounts/$account/IncomingPhoneNumbers/$phone.json \
     --data-urlencode "SmsUrl=$url" \
-    -u "$account:$token"
+    -u "$account:$token" > /dev/null 2>&1
 
 if [ $? -eq 0 ]
 then
