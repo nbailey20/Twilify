@@ -22,20 +22,17 @@ def test_network_connectivity(DEBUG):
 
 ## Taken from boto3 example, returns True if upload successful, else False
 def write_file(DEBUG, data):
-    config = Config(connect_timeout=3, retries={'max_attempts': 2})
+    config = Config(connect_timeout=3, retries={'max_attempts': 4})
     s3 = boto3.resource('s3', config=config)
-    if DEBUG: print("DEBUG: testing network connectivity before writing local songbank to S3")
-    if test_network_connectivity(DEBUG):
-        if DEBUG: print("DEBUG: about to save local songbank to S3")
-        try:
-            obj = s3.Object(os.environ["bucket_name"], os.environ["songbank_file_name"])
-            obj.put(Body=(bytes(json.dumps(data).encode('utf-8'))))
-            if DEBUG: print("DEBUG: successfully saved songbank to S3", data)
-            return True
-        except:
-            if DEBUG: print("DEBUG: did not successfully write file to S3")
-            return False
-    return False
+    if DEBUG: print("DEBUG: about to save local songbank to S3")
+    try:
+        obj = s3.Object(os.environ["bucket_name"], os.environ["songbank_file_name"])
+        obj.put(Body=(bytes(json.dumps(data).encode('utf-8'))))
+        if DEBUG: print("DEBUG: successfully saved songbank to S3", data)
+        return True
+    except:
+        if DEBUG: print("DEBUG: did not successfully write file to S3")
+        return False
 
 
 
@@ -43,16 +40,13 @@ def write_file(DEBUG, data):
 def read_file(DEBUG):
     ## Read object from S3 after checking network connection
     if DEBUG: print("DEBUG: about to retrieve songbank object from S3")
-    config = Config(connect_timeout=3, retries={'max_attempts': 2})
+    config = Config(connect_timeout=3, retries={'max_attempts': 4})
     s3 = boto3.client('s3', config=config)
-    if test_network_connectivity(DEBUG):
-        try:
-            res = s3.get_object(Bucket=os.environ["bucket_name"], Key=os.environ["songbank_file_name"])
-            if DEBUG: print("DEBUG: successfully retrieved songbank object from S3", res)
-        except:
-            if DEBUG: print("DEBUG: could not retrieve songbank from S3")
-            return False
-    else:
+    try:
+        res = s3.get_object(Bucket=os.environ["bucket_name"], Key=os.environ["songbank_file_name"])
+        if DEBUG: print("DEBUG: successfully retrieved songbank object from S3", res)
+    except:
+        if DEBUG: print("DEBUG: could not retrieve songbank from S3")
         return False
 
     ## Parse songbank file into json object

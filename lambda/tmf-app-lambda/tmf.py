@@ -15,6 +15,12 @@ DEBUG = True if os.environ["debug"] == "true" else False
 def lambda_handler(event, context):
     if DEBUG: print("DEBUG: starting lambda_handler beginning function", event)
 
+    ## Make sure NAT gateway is accepting traffic
+    if not s3Handler.test_network_connectivity(DEBUG):
+        if DEBUG: print("DEBUG: no network connectivity, about to send error text")
+        twilioHandler.send_error_message("TMF has no Internet connectivity, aborting.")
+        sys.exit(1)
+
     ## Load songbank file
     songbank_json = s3Handler.read_file(DEBUG)
 
