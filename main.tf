@@ -499,7 +499,7 @@ resource "aws_lambda_function" "tmfAppLambda" {
   function_name = "tmf"
   role          = aws_iam_role.tmfAppLambdaIamRole.arn
   handler       = "tmf.lambda_handler"
-  timeout       = 40
+  timeout       = 180
   runtime       = "python3.6"
   vpc_config {
     security_group_ids = [aws_security_group.lambdaSg.id]

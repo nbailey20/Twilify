@@ -19,6 +19,7 @@ def auth_spotify(DEBUG, refresh_token):
             "http://127.0.0.1",
             scope=scope,
             cache_path=None,
+            requests_timeout=5,
         )
         if DEBUG: print("DEBUG: successfully created oauth client")
     except:
@@ -32,11 +33,12 @@ def auth_spotify(DEBUG, refresh_token):
         ret_list[1] = token_info["refresh_token"]
         if DEBUG: print("DEBUG: got token info", token_info)
     except:
-        print("DEBUG: could not get access token or next refresh, returning False")
+        if DEBUG: print("DEBUG: could not get access token or next refresh, returning False")
         return ret_list
 
     if DEBUG: print("DEBUG: about to create spotipy client")
     try:
+        ## client by default has request timeout of 5 seconds, 3 retries per API call
         ret_list[0] = spotipy.Spotify(auth=access_token)
         if DEBUG: print("DEBUG: successfully returning spotipy API client back to main", ret_list)
     except:

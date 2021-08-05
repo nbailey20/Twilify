@@ -23,6 +23,7 @@ Deployment into AWS and integration with Twilio webhook is working. Initial play
 - Spotify occasionally doesn't want to provide new refresh token which causes error in app - hypothesis: token expiration related, too many frequent texts?
 - [RESOLVED] Songbank keeps track of / increments play count for songs even when user removed them, has no effect on usage but still
 - [TESTING] TMF can fail when writing new songbank back to S3, put object call is timing out - need network connectivity check for all S3 operations and max retries/timeouts for boto3
+- Spotify calls can also timeout - refreshing token
 - TMF silently fails when texted during network stack deletion - no issue if warmup message works
 - TMF ignores existing Spotify playlists with same name upon app setup, will create new playlist instead of choosing existing (should be variable option to overwrite)
 - [RESOLVED] Update setup script to invoke Twilio API to update phone number instead of manually copy/pasting with MFA login
