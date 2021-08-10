@@ -36,10 +36,11 @@ def update_refresh_token(DEBUG, next_refresh_token):
     if DEBUG: print("DEBUG: about to save updated refresh token to parameter store")
     try:
         ssm.put_parameter(
-            Name = os.environ["refresh_token_parameter_name"],
-            Value = next_refresh_token,
-            Type = "SecureString",
+            Name      = os.environ["refresh_token_parameter_name"],
+            Value     = next_refresh_token,
+            Type      = "SecureString",
             Overwrite = True,
+            KeyId     = os.environ["refresh_token_kms_key_arn"],
         )
         if DEBUG: print("DEBUG: successfully saved refresh token to parameter store")
         return True
