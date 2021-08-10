@@ -93,7 +93,7 @@ resource "aws_s3_bucket_object" "tmfNetworkCft" {
                         "AllocationId"
                     ]
                 },
-                "SubnetId": aws_subnet.publicSubnet.id,
+     #           "SubnetId": aws_subnet.publicSubnet.id,
                 "Tags": [
                     {
                         "Key": "Name",
@@ -116,7 +116,7 @@ resource "aws_s3_bucket_object" "tmfNetworkCft" {
         "AttachIGW": {
             "Type": "AWS::EC2::VPCGatewayAttachment",
             "Properties": {
-                "VpcId": aws_vpc.vpc.id,
+    #            "VpcId": aws_vpc.vpc.id,
                 "InternetGatewayId": {
                     "Ref": "IGW"
                 }
@@ -125,7 +125,7 @@ resource "aws_s3_bucket_object" "tmfNetworkCft" {
         "PrivateNatGwRoute": {
             "Type": "AWS::EC2::Route",
             "Properties": {
-                "RouteTableId": aws_route_table.privateRt.id,
+    #            "RouteTableId": aws_route_table.privateRt.id,
                 "DestinationCidrBlock": "0.0.0.0/0",
                 "NatGatewayId": {
                     "Ref": "NatGateway"
@@ -136,7 +136,7 @@ resource "aws_s3_bucket_object" "tmfNetworkCft" {
             "Type": "AWS::EC2::Route",
             "DependsOn": "AttachIGW",
             "Properties": {
-                "RouteTableId": aws_route_table.publicRt.id,
+    #            "RouteTableId": aws_route_table.publicRt.id,
                 "DestinationCidrBlock": "0.0.0.0/0",
                 "GatewayId": {
                     "Ref": "IGW"
