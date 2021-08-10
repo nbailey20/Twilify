@@ -33,3 +33,4 @@ Deployment into AWS and integration with Twilio webhook is working. Initial play
 - Need ability to loosely control playlist via Hello text - specific keyword to include in search query
 - Need ability to accidentally delete spotify playlist and resume without having to recreate songbank, overwrite keyword
 - Need ability to temporarily remove cost-saving mode for faster responses for a user-texted amount of time - AWS step function with wait delay
+- Use S3 bucket keys for KMS encryption to reduce cost 
