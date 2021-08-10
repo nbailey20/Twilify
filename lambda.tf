@@ -121,6 +121,33 @@ resource "aws_iam_role" "tmfAppLambdaIamRole" {
 }
     )
   }
+
+  inline_policy {
+    name = "tmf-app-lambda-parameter-store-policy"
+    policy = jsonencode (
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Action": "ssm:GetParameter",
+            "Resource": [
+                aws_ssm_parameter.spotify_refresh_token.arn
+            ]
+        },
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Action": "kms:Decrypt",
+            "Resource": [
+                aws_kms_key.tmf_kms_key.arn
+            ]
+        }
+    ]
+}
+    )
+  }
 }
 
 
@@ -246,8 +273,6 @@ resource "aws_lambda_function" "tmfReceptionLambda" {
   runtime       = "python3.6"
   environment {
     variables = {
-      twilio_account_sid = var.twilio_account_sid
-      twilio_auth_token  = var.twilio_auth_token
       s3_template_url    = "https://s3.amazonaws.com/${aws_s3_bucket.setupBucket.id}/${aws_s3_bucket_object.tmfNetworkCft.key}"
       user_number        = var.user_number
       twilio_number      = var.twilio_number
@@ -273,8 +298,10 @@ resource "aws_lambda_function" "tmfAppLambda" {
   }
   environment {
     variables = {
-      client_id                      = var.client_id
-      client_secret                  = var.client_secret
+      spotify_client_id              = var.spotify_client_id
+      spotify_client_secret          = var.spotify_client_secret
+      refresh_token_parameter_name   = aws_ssm_parameter.spotify_refresh_token.name
+      refresh_token_kms_key_arn      = aws_kms_key.tmf_kms_key.arn
       rec_limit                      = var.rec_limit
       bucket_name                    = aws_s3_bucket.songbankBucket.bucket
       songbank_file_name             = var.songbank_file_name

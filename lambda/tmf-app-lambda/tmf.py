@@ -1,8 +1,7 @@
 ## Main application flow
 
-import json, sys, os, time
-import musicQueryHandler, playlistHandler, twilioHandler, s3Handler, songbankHandler
-import urllib
+import sys, os
+import musicQueryHandler, playlistHandler, twilioHandler, s3Handler, songbankHandler, tokenAuthHandler
 
 ## Genres we don't want event notifications for, even if the artist is popular af
 #BLACKLIST = ["black-metal", "bluegrass", "death-metal", "country", "heavy-metal", "metal", "alternative country"]
@@ -29,19 +28,16 @@ def lambda_handler(event, context):
         twilioHandler.send_error_message("Could not read songbank file from S3, aborting.")
         sys.exit(1)
 
-    ## Retrieve saved refresh token data
-    if DEBUG: print("DEBUG: looking for saved Spotify refresh token")
-    try:
-        current_refresh_token = songbank_json["refreshToken"]
-        if DEBUG: print("DEBUG: successfully found saved refresh token", current_refresh_token)
-    except:
-        if DEBUG: print("DEBUG: could not find Spotify refresh token, about to send error text")
-        twilioHandler.send_error_message("Could not find Spotify refresh token data, aborting.")
+    ## Retrieve and decrypt refresh token data from SSM Parameter Store
+    current_refresh_token = tokenAuthHandler.retrieve_refresh_token(DEBUG)
+    if not current_refresh_token:
+        print("DEBUG: could not retrieve saved Spotify refresh token, about to send error text")
+        twilioHandler.send_error_message("Could not retrieve Spotify refresh token from Parameter Store")
         sys.exit(1)
 
 
     ## Authenticate to Spotify
-    sp, next_refresh_token = musicQueryHandler.auth_spotify(DEBUG, current_refresh_token)
+    sp, next_refresh_token = tokenAuthHandler.auth_spotify(DEBUG, current_refresh_token)
     if not next_refresh_token:
         print("DEBUG: could not retrieve next refresh token from auth spotify, about to send error text")
         twilioHandler.send_error_message("Could not get new access token from Spotify")

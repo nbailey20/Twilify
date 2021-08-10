@@ -46,7 +46,7 @@ resource "aws_s3_bucket_object" "tmfAppLambda" {
 resource "aws_s3_bucket_object" "tmfAppSongbank" {
   bucket  = aws_s3_bucket.songbankBucket.id
   key     = var.songbank_file_name
-  content = jsonencode({"refreshToken": var.refresh_token})
+  content = jsonencode({})
 }
 
 resource "aws_s3_bucket_object" "tmfNetworkCft" {

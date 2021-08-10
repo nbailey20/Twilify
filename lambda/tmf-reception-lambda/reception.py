@@ -1,7 +1,5 @@
-import boto3, sys, botocore, os
+import boto3, botocore, os
 import eventParser
-#from twilio.rest import Client
-
 
     
 def lambda_handler(event, context):
@@ -37,9 +35,6 @@ def lambda_handler(event, context):
         print("DEBUG: about to return success text", success_response_text)
         return success_response_text
 
-
-    account_sid = os.environ["twilio_account_sid"]
-    auth_token = os.environ["twilio_auth_token"]
 
     ## if SNS notifies that network stack is done creating, then invoke TMF app
     if event_type == "sns":

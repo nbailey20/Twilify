@@ -1,7 +1,6 @@
 ## Handles Spotify playlist operations
 
-import spotipy
-import json, os
+import os
 
 
 def create_new_playlist(DEBUG, sp):

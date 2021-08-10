@@ -1,7 +1,7 @@
 ## Handles songbank creation, loading, and saving operations
 ## Also kicks off call to create playlist if first time or no longer exists but should
 
-import s3Handler, playlistHandler, musicQueryHandler
+import s3Handler, playlistHandler, musicQueryHandler, tokenAuthHandler
 import os
 
 ##  Takes json songbank file object and Spotify API client
@@ -14,8 +14,7 @@ def load_songbank(DEBUG, sp, songbank_json):
         "used":               [string],
         "numCycles":          int,
         "playlistId":         string,
-        "playlistListTracks": [{"id": string, "count": int}],
-        "refreshToken":       string
+        "playlistListTracks": [{"id": string, "count": int}]
     }
     """
 
@@ -51,7 +50,6 @@ def load_songbank(DEBUG, sp, songbank_json):
                 "numCycles": 0, 
                 "playlistId": playlist_id, 
                 "playlistTracks": [], 
-                "refreshToken": songbank_json["refreshToken"]
             }
         else:
             if DEBUG: print("DEBUG: could not create new songbank data")
@@ -78,9 +76,9 @@ def save_songbank(DEBUG, songbank, songs_to_add, next_refresh_token):
     for song in songs_to_add:
         songbank["playlistTracks"].append({"id": song, "count": 0})
 
-    ## Update refresh token with next value
-    songbank["refreshToken"] = next_refresh_token
-    if DEBUG: print("DEBUG: updated songbank locally")
+    ## Update refresh token SSM parameter with next value
+    if not tokenAuthHandler.update_refresh_token(DEBUG, next_refresh_token):
+        return False
 
     ## Save songbank to S3 for next invocation
     if s3Handler.write_file(DEBUG, songbank):
