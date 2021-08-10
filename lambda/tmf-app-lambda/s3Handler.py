@@ -28,7 +28,7 @@ def write_file(DEBUG, data):
     try:
         obj = s3.Object(os.environ["bucket_name"], os.environ["songbank_file_name"])
         obj.put(Body=(bytes(json.dumps(data).encode('utf-8'))))
-        if DEBUG: print("DEBUG: successfully saved songbank to S3", data)
+        if DEBUG: print("DEBUG: successfully saved songbank to S3")
         return True
     except:
         if DEBUG: print("DEBUG: did not successfully write file to S3")

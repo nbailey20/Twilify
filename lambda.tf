@@ -1,14 +1,14 @@
-resource "aws_security_group" "lambdaSg" {
-  name        = "tmf-lambda-sg"
-  vpc_id      = aws_vpc.vpc.id
+#resource "aws_security_group" "lambdaSg" {
+#  name        = "tmf-lambda-sg"
+#  vpc_id      = aws_vpc.vpc.id
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-}
+#  egress {
+#    from_port   = 0
+#    to_port     = 0
+#    protocol    = "-1"
+#    cidr_blocks = ["0.0.0.0/0"]
+#  }
+#}
 
 resource "aws_iam_role" "tmfAppLambdaIamRole" {
   name = "tmf-lambda-app-role"
