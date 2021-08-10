@@ -32,7 +32,7 @@ def retrieve_refresh_token(DEBUG):
 
 def update_refresh_token(DEBUG, next_refresh_token):
     config = Config(connect_timeout=3, retries={"max_attempts": 4})
-    ssm = boto3.resource("ssm", config=config)
+    ssm = boto3.client("ssm", config=config)
     if DEBUG: print("DEBUG: about to save updated refresh token to parameter store", next_refresh_token)
     try:
         ssm.put_parameter(
