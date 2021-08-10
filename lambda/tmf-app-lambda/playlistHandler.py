@@ -7,7 +7,7 @@ def create_new_playlist(DEBUG, sp):
     try:
         res = sp.user_playlist_create(os.environ["spotify_user"], os.environ["playlist_name"], public=False) 
         playlist_id = res["id"]
-        if DEBUG: print("DEBUG: successfully created playlist", playlist_id)
+        if DEBUG: print("DEBUG: successfully created playlist")
         return playlist_id
     except:
         if DEBUG: print("DEBUG: could not create new Spotify playlist")
@@ -29,7 +29,7 @@ def load_playlist(DEBUG, sp, songbank):
         res = res["items"]
         for track in res:
             currentTracks.append(track["track"]["id"])
-        if DEBUG: print("DEBUG: successfully retrieved playlist tracks", currentTracks)
+        if DEBUG: print("DEBUG: successfully retrieved playlist tracks")
     except:
         return False
   

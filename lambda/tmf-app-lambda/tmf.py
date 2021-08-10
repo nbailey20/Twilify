@@ -71,11 +71,12 @@ def lambda_handler(event, context):
     if DEBUG: print("DEBUG: will attempt to add " + str(num_songs_to_add) + " songs to the playlist")
 
     songs_to_add = []
-    for _ in range(num_songs_to_add):
+    for i in range(num_songs_to_add):
+        if DEBUG: print("DEBUG: getting track recommendation " + str(i))
         new_song_id, songbank = musicQueryHandler.get_song_rec_from_seeds(DEBUG, sp, songbank)
         if new_song_id:
             songs_to_add.append(new_song_id)
-    if DEBUG: print("DEBUG: finished collecting song recs", songs_to_add)
+    if DEBUG: print("DEBUG: finished collecting song recs")
 
 
     ## Add new songs to songbank and write data to S3 for next time

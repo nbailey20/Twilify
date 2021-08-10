@@ -46,7 +46,6 @@ def get_track_recs(sp, seeds):
 ## Updates songbank to ensure all seeds used equally
 ## If song result exists and doesn't exist in current playlist, it is returned
 def get_song_rec_from_seeds(DEBUG, sp, songbank):
-    if DEBUG: print("DEBUG: attempting to get new track recommendation")
     attempts = 0
     while attempts < 5:
 

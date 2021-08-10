@@ -23,7 +23,7 @@ def retrieve_refresh_token(DEBUG):
     ssm = boto3.client("ssm", config=config)
     try:
         refresh_token = ssm.get_parameter(Name=parameter_name, WithDecryption=True)["Parameter"]["Value"]
-        if DEBUG: print("DEBUG: successfully retrieved refresh token from parameter store", refresh_token)
+        if DEBUG: print("DEBUG: successfully retrieved refresh token from parameter store")
         return refresh_token
     except:
         if DEBUG: print("DEBUG: could not retrieve refresh token from parameter store")
@@ -33,7 +33,7 @@ def retrieve_refresh_token(DEBUG):
 def update_refresh_token(DEBUG, next_refresh_token):
     config = Config(connect_timeout=3, retries={"max_attempts": 4})
     ssm = boto3.client("ssm", config=config)
-    if DEBUG: print("DEBUG: about to save updated refresh token to parameter store", next_refresh_token)
+    if DEBUG: print("DEBUG: about to save updated refresh token to parameter store")
     try:
         ssm.put_parameter(
             Name = os.environ["refresh_token_parameter_name"],
@@ -53,7 +53,7 @@ def update_refresh_token(DEBUG, next_refresh_token):
 ## [False, False] -> [sp, refresh_token] if successful
 def auth_spotify(DEBUG, refresh_token):
     scope = "user-top-read playlist-modify-private" 
-    if DEBUG: print("DEBUG: about to create Spotify oauth client with refresh token", refresh_token)
+    if DEBUG: print("DEBUG: about to create Spotify oauth client with refresh token")
     try:
         sp_oauth = SpotifyOAuth(
             os.environ["spotify_client_id"],
@@ -73,7 +73,7 @@ def auth_spotify(DEBUG, refresh_token):
         token_info = sp_oauth.refresh_access_token(refresh_token)
         access_token = token_info["access_token"]
         ret_list[1] = token_info["refresh_token"]
-        if DEBUG: print("DEBUG: got token info", token_info)
+        if DEBUG: print("DEBUG: got new access token object")
     except:
         if DEBUG: print("DEBUG: could not get access token or next refresh, returning False")
         return ret_list
@@ -82,8 +82,8 @@ def auth_spotify(DEBUG, refresh_token):
     try:
         ## client by default has request timeout of 5 seconds, 3 retries per API call
         ret_list[0] = Spotify(auth=access_token)
-        if DEBUG: print("DEBUG: successfully returning spotipy API client back to main", ret_list)
+        if DEBUG: print("DEBUG: successfully returning spotipy API client back to main")
     except:
-        if DEBUG: print("DEBUG: could not create spotipy client with access token", access_token)
+        if DEBUG: print("DEBUG: could not create spotipy client with access token")
         return ret_list
     return ret_list
