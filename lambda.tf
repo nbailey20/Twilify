@@ -361,10 +361,10 @@ resource "aws_lambda_function" "tmfAppLambda" {
   timeout       = 180
   runtime       = "python3.6"
   kms_key_arn   = aws_kms_key.tmf_kms_key.arn
-  vpc_config {
-    security_group_ids = [aws_security_group.lambdaSg.id]
-    subnet_ids         = [aws_subnet.privateSubnet1.id, aws_subnet.privateSubnet2.id]
-  }
+#  vpc_config {
+#    security_group_ids = [aws_security_group.lambdaSg.id]
+#    subnet_ids         = [aws_subnet.privateSubnet1.id, aws_subnet.privateSubnet2.id]
+#  }
   environment {
     variables = {
       spotify_client_id              = var.spotify_client_id

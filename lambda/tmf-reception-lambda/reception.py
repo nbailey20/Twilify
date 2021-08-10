@@ -17,7 +17,7 @@ def lambda_handler(event, _):
         return
     if DEBUG: print("DEBUG: parsed event type as", event_type)
 
-    ## if user texted for more music, start creation of network stack
+    ## if user texted, acknowledge and echo back any keywords found
     if event_type == "sms":
         playlist_params = parse_text(DEBUG, event["Body"])
         choices_captured = "Message received!"
@@ -27,41 +27,44 @@ def lambda_handler(event, _):
         response_header = "<Response><Message><Body>"
         response_footer = "</Body></Message></Response>"
 
-        stack_name            = "tmf-network"
-        tmfNetworkCftUrl      = os.environ["s3_template_url"]
-        tmfNetworkSnsTopic    = os.environ["sns_topic_arn"]
+        #stack_name            = "tmf-network"
+        #tmfNetworkCftUrl      = os.environ["s3_template_url"]
+        #tmfNetworkSnsTopic    = os.environ["sns_topic_arn"]
     
-        cf = boto3.client("cloudformation")
-        try:
-            cf.create_stack(
-                StackName=stack_name,
-                TemplateURL=tmfNetworkCftUrl, 
-                Parameters=[],
-                NotificationARNs=[tmfNetworkSnsTopic]
-            )
-            if DEBUG: print("DEBUG: TMF Network Stack creating...")
-        except:
-            if DEBUG: print("DEBUG: could not create network connection CFT for app")
-            return response_header + "Error: could not setup network connection, aborting." + response_footer
+        #cf = boto3.client("cloudformation")
+        #try:
+        #    cf.create_stack(
+        #        StackName=stack_name,
+        #        TemplateURL=tmfNetworkCftUrl, 
+        #        Parameters=[],
+        #        NotificationARNs=[tmfNetworkSnsTopic]
+        #    )
+        #    if DEBUG: print("DEBUG: TMF Network Stack creating...")
+        #except:
+        #    if DEBUG: print("DEBUG: could not create network connection CFT for app")
+        #    return response_header + "Error: could not setup network connection, aborting." + response_footer
 
         ## save playlist parameter state
-        if not parameterHandler.save_playlist_parameters(DEBUG, json.dumps(playlist_params)):
-            if DEBUG: print("DEBUG: could not save text parameters, sending error text")
-            return response_header + "Error: could not save playlist request(s), ignoring request." + response_footer
+        #if not parameterHandler.save_playlist_parameters(DEBUG, json.dumps(playlist_params)):
+        #    if DEBUG: print("DEBUG: could not save text parameters, sending error text")
+        #    return response_header + "Error: could not save playlist request(s), ignoring request." + response_footer
         
-        if DEBUG: print("DEBUG: about to return success text")
-        return response_header + "Warming up the ol' brain engine... " + choices_captured + response_footer
+        if DEBUG: print("DEBUG: about to send acknowledgement text")
+
+
+        ### MAKE THIS A TWILIO CALL INSTEAD OF RETURN
+    #    return response_header + "Absolutely, new music update coming right away. " + choices_captured + response_footer
 
 
     ## if SNS notifies that network stack is done creating, then invoke TMF app
-    if event_type == "sns":
-        if DEBUG: print("DEBUG: TMF stack finished creating")
+    #if event_type == "sns":
+    #    if DEBUG: print("DEBUG: TMF stack finished creating")
 
         ## load playlist parameters
-        playlist_params_string = parameterHandler.load_playlist_parameters(DEBUG)
-        if playlist_params_string is False:
-            if DEBUG: print("DEBUG: could not load text parameters, aborting.")
-            return False
+    #    playlist_params_string = parameterHandler.load_playlist_parameters(DEBUG)
+    #    if playlist_params_string is False:
+    #        if DEBUG: print("DEBUG: could not load text parameters, aborting.")
+    #        return False
 
         ## launch app with parameters
         try:
@@ -70,7 +73,7 @@ def lambda_handler(event, _):
             client.invoke(
                 FunctionName="tmf",
                 InvocationType="Event",
-                Payload=playlist_params_string,
+                Payload=json.dumps(playlist_params),
             )
             return
         except:
