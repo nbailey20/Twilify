@@ -1,6 +1,6 @@
 ## Main application flow
 
-import sys, os
+import os
 import musicQueryHandler, playlistHandler, twilioHandler, s3Handler, songbankHandler, tokenAuthHandler
 
 ## Genres we don't want event notifications for, even if the artist is popular af
@@ -11,14 +11,14 @@ DEBUG = True if os.environ["debug"] == "true" else False
 
 
 ############################################################# START MAIN CODE BLOCK ##########################################################
-def lambda_handler(event, context):
+def lambda_handler(event, _):
     if DEBUG: print("DEBUG: starting lambda_handler beginning function", event)
 
     ## Make sure NAT gateway is accepting traffic
     if not s3Handler.test_network_connectivity(DEBUG):
         if DEBUG: print("DEBUG: no network connectivity, about to send error text")
         twilioHandler.send_error_message("TMF has no Internet connectivity, aborting.")
-        sys.exit(1)
+        return
 
     ## Load songbank file
     songbank_json = s3Handler.read_file(DEBUG)
@@ -26,14 +26,14 @@ def lambda_handler(event, context):
     if songbank_json is False:
         if DEBUG: print("DEBUG: could not retrieve songbank json from S3, about to send error text")
         twilioHandler.send_error_message("Could not read songbank file from S3, aborting.")
-        sys.exit(1)
+        return
 
     ## Retrieve and decrypt refresh token data from SSM Parameter Store
     current_refresh_token = tokenAuthHandler.retrieve_refresh_token(DEBUG)
     if not current_refresh_token:
         print("DEBUG: could not retrieve saved Spotify refresh token, about to send error text")
         twilioHandler.send_error_message("Could not retrieve Spotify refresh token from Parameter Store")
-        sys.exit(1)
+        return
 
 
     ## Authenticate to Spotify
@@ -41,11 +41,11 @@ def lambda_handler(event, context):
     if not next_refresh_token:
         print("DEBUG: could not retrieve next refresh token from auth spotify, about to send error text")
         twilioHandler.send_error_message("Could not get new access token from Spotify")
-        sys.exit(1)
+        return
     if not sp:
         print("DEBUG: could not retrieve api client object from auth spotify call, about to send error text")
         twilioHandler.send_error_message("Could not create API client with Spotify token")
-        sys.exit(1)
+        return
 
 
     ## Initialize Songbank
@@ -54,7 +54,7 @@ def lambda_handler(event, context):
     if not songbank:
         if DEBUG: print("DEBUG: did not return anything from load songbank call, about to send error text")
         twilioHandler.send_error_message("Cannot load songbank, aborting.")
-        sys.exit(1)
+        return
 
 
     ## Load playlist information
@@ -63,7 +63,7 @@ def lambda_handler(event, context):
     if playlistTracks is False:
         print("DEBUG: could not retrieve tracks from playlist, about to send error text")
         twilioHandler.send_error_message("Cannot load playlist, aborting.")
-        sys.exit(1)
+        return
 
 
     ## For each song to add, get a recommendation
@@ -84,14 +84,14 @@ def lambda_handler(event, context):
     if not songbankHandler.save_songbank(DEBUG, songbank, songs_to_add, next_refresh_token):
         if DEBUG: print("DEBUG: could not save songbank to s3, about to send error text")
         twilioHandler.send_error_message("Could not save songbank to S3")
-        sys.exit(1)
+        return
 
 
     ## Add recommended songs to Spotify playlist
     if not playlistHandler.save_playlist(DEBUG, sp, songbank["playlistId"], songs_to_add):
         if DEBUG: print("DEBUG: could not save Spotify playlist, about to send error text")
         twilioHandler.send_error_message("Updated songbank with new content but could not push to playlist")
-        sys.exit(1)
+        return
 
 
     ## All done!

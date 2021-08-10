@@ -64,10 +64,6 @@ def test_valid_lambda_event(event):
     }
     if not compare_event_to_valid(valid_request_context, request):
         return False
-
-    ## check response payload
-  #  response = event["responsePayload"]
-#    if "errorMessage" in response:
     return True
 
 

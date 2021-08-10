@@ -57,7 +57,7 @@ def load_songbank(DEBUG, sp, songbank_json):
     else:
         ## make sure up-to-date Spotify playlist ID in songbank
         songbank_json["playlistID"] = playlist_id
-        if DEBUG: print("DEBUG: retrieving previous songbank data", songbank_json)
+        if DEBUG: print("DEBUG: retrieving previous songbank data")
         return songbank_json
 
 
