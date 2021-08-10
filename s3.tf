@@ -1,6 +1,6 @@
 resource "aws_s3_bucket" "songbankBucket" {
   acl = "private"
-  bucket_prefix = "tmf-songbank"
+  bucket_prefix = "tmf-songbank-"
   tags = {
     Name = "TMF Songbank Bucket"
   }
@@ -24,7 +24,7 @@ resource "aws_s3_bucket_public_access_block" "songbankBucketAccessBlock" {
 
 resource "aws_s3_bucket" "setupBucket" {
   acl = "private"
-  bucket_prefix = "tmf-setup"
+  bucket_prefix = "tmf-setup-"
   tags = {
     Name = "TMF Setup Bucket"
   }
