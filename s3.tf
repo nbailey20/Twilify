@@ -4,6 +4,14 @@ resource "aws_s3_bucket" "songbankBucket" {
   tags = {
     Name = "TMF Songbank Bucket"
   }
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = aws_kms_key.tmf_kms_key.arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "songbankBucketAccessBlock" {
@@ -19,6 +27,14 @@ resource "aws_s3_bucket" "setupBucket" {
   bucket_prefix = "tmf-setup"
   tags = {
     Name = "TMF Setup Bucket"
+  }
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        kms_master_key_id = aws_kms_key.tmf_kms_key.arn
+        sse_algorithm     = "aws:kms"
+      }
+    }
   }
 }
 

@@ -131,15 +131,33 @@ resource "aws_iam_role" "tmfAppLambdaIamRole" {
         {
             "Sid": "",
             "Effect": "Allow",
-            "Action": "ssm:GetParameter",
+            "Action": [
+              "ssm:GetParameter",
+              "ssm:PutParameter"
+            ],
             "Resource": [
                 aws_ssm_parameter.spotify_refresh_token.arn
             ]
-        },
+        }
+    ]
+}
+    )
+  }
+
+  inline_policy {
+    name = "tmf-app-lambda-kms-policy"
+    policy = jsonencode (
+{
+    "Version": "2012-10-17",
+    "Statement": [
         {
             "Sid": "",
             "Effect": "Allow",
-            "Action": "kms:Decrypt",
+            "Action": [
+              "kms:Decrypt",
+              "kms:Encrypt",
+              "kms:GenerateDataKey"
+            ],
             "Resource": [
                 aws_kms_key.tmf_kms_key.arn
             ]
@@ -220,6 +238,29 @@ resource "aws_iam_role" "tmfReceptionLambdaIamRole" {
   }
 
   inline_policy {
+    name = "tmf-app-lambda-kms-policy"
+    policy = jsonencode (
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Action": [
+              "kms:Decrypt",
+              "kms:Encrypt",
+              "kms:GenerateDataKey"
+            ],
+            "Resource": [
+                aws_kms_key.tmf_kms_key.arn
+            ]
+        }
+    ]
+}
+    )
+  }
+
+  inline_policy {
     name = "tmf-reception-lambda-network-cft-policy"
     policy = jsonencode(
 {
@@ -271,6 +312,7 @@ resource "aws_lambda_function" "tmfReceptionLambda" {
   handler       = "reception.lambda_handler"
   timeout       = 50
   runtime       = "python3.6"
+  kms_key_arn   = aws_kms_key.tmf_kms_key.arn
   environment {
     variables = {
       s3_template_url    = "https://s3.amazonaws.com/${aws_s3_bucket.setupBucket.id}/${aws_s3_bucket_object.tmfNetworkCft.key}"
@@ -292,6 +334,7 @@ resource "aws_lambda_function" "tmfAppLambda" {
   handler       = "tmf.lambda_handler"
   timeout       = 180
   runtime       = "python3.6"
+  kms_key_arn   = aws_kms_key.tmf_kms_key.arn
   vpc_config {
     security_group_ids = [aws_security_group.lambdaSg.id]
     subnet_ids         = [aws_subnet.privateSubnet1.id, aws_subnet.privateSubnet2.id]
