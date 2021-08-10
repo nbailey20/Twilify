@@ -72,7 +72,7 @@ def lambda_handler(event, _):
 
     songs_to_add = []
     for i in range(num_songs_to_add):
-        if DEBUG: print("DEBUG: getting track recommendation " + str(i))
+        if DEBUG: print("DEBUG: getting track recommendation " + str(i+1))
         new_song_id, songbank = musicQueryHandler.get_song_rec_from_seeds(DEBUG, sp, songbank)
         if new_song_id:
             songs_to_add.append(new_song_id)

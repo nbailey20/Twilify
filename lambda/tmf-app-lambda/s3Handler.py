@@ -11,7 +11,7 @@ def test_network_connectivity(DEBUG):
             if DEBUG: print("DEBUG: passed network connectivity check")
             return True
         except: 
-            if DEBUG: print("DEBUG: failed network connectivity test " + str(i))
+            if DEBUG: print("DEBUG: failed network connectivity test " + str(i+1))
             time.sleep(3)
             i += 1
             continue
