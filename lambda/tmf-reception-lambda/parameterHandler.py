@@ -10,7 +10,7 @@ def save_playlist_parameters(DEBUG, playlist_params_string):
         ssm.put_parameter(
             Name      = os.environ["playlist_params_parameter_name"],
             Value     = playlist_params_string,
-            Type      = "String",
+            Type      = "SecureString",
             Overwrite = True,
             KeyId     = os.environ["parameter_kms_key_arn"],
         )
