@@ -1,10 +1,10 @@
-## Handles Spotify API authentication and all Music recommendation & search operations
+## Handles all Spotify API Music recommendation & search operations
 
 import os
 from random import randrange
 
 
-## Return a list of current user's top track Spotify IDs given API client object
+## Return a list of current user's top track Spotify IDs given authenticated API client object
 def get_fav_tracks(DEBUG, sp):
     fav_tracks = []
     try:
@@ -42,6 +42,9 @@ def get_track_recs(sp, seeds):
         return False
 
 
+## Selects random songs saved in songbank as seeds for Spotify query
+## Updates songbank to ensure all seeds used equally
+## If song result exists and doesn't exist in current playlist, it is returned
 def get_song_rec_from_seeds(DEBUG, sp, songbank):
     if DEBUG: print("DEBUG: attempting to get new track recommendation")
     attempts = 0

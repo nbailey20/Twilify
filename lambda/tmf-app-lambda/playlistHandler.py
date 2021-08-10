@@ -1,4 +1,4 @@
-## Handles Spotify playlist operations
+## Handles Spotify playlist operations: create, save, load
 
 import os
 
