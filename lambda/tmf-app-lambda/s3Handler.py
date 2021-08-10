@@ -11,7 +11,7 @@ def test_network_connectivity(DEBUG):
             if DEBUG: print("DEBUG: passed network connectivity check")
             return True
         except: 
-            if DEBUG: print("DEBUG: failed network connectivity test " + str(i))
+            if DEBUG: print("DEBUG: failed network connectivity test " + str(i+1))
             time.sleep(3)
             i += 1
             continue
@@ -44,7 +44,7 @@ def read_file(DEBUG):
     s3 = boto3.client('s3', config=config)
     try:
         res = s3.get_object(Bucket=os.environ["bucket_name"], Key=os.environ["songbank_file_name"])
-        if DEBUG: print("DEBUG: successfully retrieved songbank object from S3", res)
+        if DEBUG: print("DEBUG: successfully retrieved songbank object from S3")
     except:
         if DEBUG: print("DEBUG: could not retrieve songbank from S3")
         return False

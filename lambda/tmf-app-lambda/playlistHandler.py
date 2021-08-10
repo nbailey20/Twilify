@@ -1,14 +1,13 @@
-## Handles Spotify playlist operations
+## Handles Spotify playlist operations: create, save, load
 
-import spotipy
-import json, os
+import os
 
 
 def create_new_playlist(DEBUG, sp):
     try:
         res = sp.user_playlist_create(os.environ["spotify_user"], os.environ["playlist_name"], public=False) 
         playlist_id = res["id"]
-        if DEBUG: print("DEBUG: successfully created playlist", playlist_id)
+        if DEBUG: print("DEBUG: successfully created playlist")
         return playlist_id
     except:
         if DEBUG: print("DEBUG: could not create new Spotify playlist")
@@ -30,7 +29,7 @@ def load_playlist(DEBUG, sp, songbank):
         res = res["items"]
         for track in res:
             currentTracks.append(track["track"]["id"])
-        if DEBUG: print("DEBUG: successfully retrieved playlist tracks", currentTracks)
+        if DEBUG: print("DEBUG: successfully retrieved playlist tracks")
     except:
         return False
   
@@ -44,7 +43,7 @@ def load_playlist(DEBUG, sp, songbank):
         if st["id"] not in currentTracks:
             saved_tracks = saved_tracks[:index] + saved_tracks[index+1:]
             num_deleted += 1
-            if DEBUG: print("DEBUG: removing track", index, st["id"])
+            if DEBUG: print("DEBUG: removing track")
         else:
             index += 1
     if DEBUG: print("DEBUG: removed songs from local songbank that no longer exist in playlist")
@@ -58,15 +57,15 @@ def load_playlist(DEBUG, sp, songbank):
             try:
                 sp.user_playlist_remove_all_occurrences_of_tracks(os.environ["spotify_user"], playlist_id, [st["id"]])
                 saved_tracks = saved_tracks[:index] + saved_tracks[index+1:]
-                if DEBUG: print("DEBUG: removed expired track from playlist and local songbank based on refresh count", st["id"])
+                if DEBUG: print("DEBUG: removed expired track from playlist and local songbank based on refresh count")
             except:
-                if DEBUG: print("DEBUG: could not remove expired track from playlist, continuing", st["id"])
+                if DEBUG: print("DEBUG: could not remove expired track from playlist, continuing")
                 index += 1
         else:
             index += 1
 
     songbank["playlistTracks"] = saved_tracks
-    if DEBUG: print("DEBUG: successfully retrieved valid tracks and updated local songbank", saved_tracks)
+    if DEBUG: print("DEBUG: successfully retrieved valid tracks and updated local songbank")
     return saved_tracks
 
 

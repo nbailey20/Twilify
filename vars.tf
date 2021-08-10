@@ -1,8 +1,8 @@
 variable aws_account_id {}
 variable aws_region {}
 variable "spotify_user" {}
-variable "client_id" {}
-variable "client_secret" {}
+variable "spotify_client_id" {}
+variable "spotify_client_secret" {}
 variable "refresh_token" {}
 variable "twilio_account_sid" {}
 variable "twilio_auth_token" {}
