@@ -22,8 +22,8 @@ def lambda_handler(event, context):
 
     ## Load songbank file
     songbank_json = s3Handler.read_file(DEBUG)
-
-    if not songbank_json:
+    ## Check explicitly for False since empty JSON is also not True
+    if songbank_json is False:
         if DEBUG: print("DEBUG: could not retrieve songbank json from S3, about to send error text")
         twilioHandler.send_error_message("Could not read songbank file from S3, aborting.")
         sys.exit(1)
@@ -59,7 +59,7 @@ def lambda_handler(event, context):
 
     ## Load playlist information
     playlistTracks = playlistHandler.load_playlist(DEBUG, sp, songbank) 
-    ## Check explicitly for False since empty list is also False
+    ## Check explicitly for False since empty list is also not True
     if playlistTracks is False:
         print("DEBUG: could not retrieve tracks from playlist, about to send error text")
         twilioHandler.send_error_message("Cannot load playlist, aborting.")
