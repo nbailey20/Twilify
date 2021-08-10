@@ -4,7 +4,7 @@ from twilio.rest import Client
 import os
 
 
-def send_error_message(DEBUG, message):
+def send_error_message(message):
     account_sid = os.environ["twilio_account_sid"]
     auth_token = os.environ["twilio_auth_token"]
     try:
@@ -20,7 +20,7 @@ def send_error_message(DEBUG, message):
 
 
 
-def send_completed_message(DEBUG, message):
+def send_completed_message(message):
     account_sid = os.environ["twilio_account_sid"]
     auth_token = os.environ["twilio_auth_token"]
     try:

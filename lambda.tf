@@ -344,6 +344,7 @@ resource "aws_lambda_function" "tmfReceptionLambda" {
       tmf_app_lambda_arn             = "${aws_lambda_function.tmfAppLambda.arn}:$LATEST"
       num_songs_in_playlist          = var.num_songs_in_playlist
       playlist_params_parameter_name = aws_ssm_parameter.playlist_text_params.name
+      parameter_kms_key_arn          = aws_kms_key.tmf_kms_key.arn
       debug                          = var.debug
     }
   }

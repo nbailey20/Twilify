@@ -12,6 +12,7 @@ def save_playlist_parameters(DEBUG, playlist_params_string):
             Value     = playlist_params_string,
             Type      = "String",
             Overwrite = True,
+            KeyId     = os.environ["parameter_kms_key_arn"],
         )
         if DEBUG: print("DEBUG: successfully saved playlist params to parameter store")
         return True
