@@ -12,7 +12,7 @@ def lambda_handler(event, _):
     if DEBUG: print("DEBUG: starting TMF reception main function")
 
     ## parse event type
-    event_type = parse_event(DEBUG, event)
+    event_type = parse_event(event)
     if not event_type:
         return
     if DEBUG: print("DEBUG: parsed event type as", event_type)
