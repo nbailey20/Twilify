@@ -1,4 +1,6 @@
-import re
+import re, os
+from twilio.rest import Client
+
 
 def parse_text(DEBUG, body):
     ## convert body to all lowercase first
@@ -26,3 +28,20 @@ def parse_text(DEBUG, body):
         playlist_params["keyword"] = match.group().split("+")[1]
     
     return playlist_params
+
+
+
+def send_acknowledgement_text(DEBUG, response):
+    account_sid = os.environ["twilio_account_sid"]
+    auth_token = os.environ["twilio_auth_token"]
+    try:
+        client = Client(account_sid, auth_token)
+        client.messages.create(
+            body = response,
+            from_= os.environ["twilio_number"],
+            to   = os.environ["user_number"]
+        )
+        if DEBUG: print("DEBUG: successfully sent acknowledgement text")
+    except:
+        if DEBUG: print("DEBUG: failed to send error text")
+    return
