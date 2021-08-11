@@ -13,7 +13,7 @@ DEBUG = True if os.environ["debug"] == "true" else False
 ############################################################# START MAIN CODE BLOCK ##########################################################
 def lambda_handler(event, _):
     if DEBUG: print("DEBUG: starting lambda_handler beginning function", event)
-    params = json.loads(event)
+    params = event
 
     ## Make sure internet connectivity is working
     if not s3Handler.test_network_connectivity(DEBUG):

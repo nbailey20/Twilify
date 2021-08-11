@@ -31,12 +31,9 @@ def get_fav_tracks(DEBUG, sp):
 
 
 ## Create Spotify query parameter object from user-provided input
-def create_query_object(seeds, params):
+def create_query_object(params):
     ## add mandatory params to object
-    req_params = {
-        "limit": os.environ["rec_limit"],
-        "seed_tracks": seeds
-    }
+    req_params = {}
 
     ## add additional params if provided
     if "happy" in params:
@@ -63,10 +60,14 @@ def create_query_object(seeds, params):
 
 ## Return a list of Spotify track recommendations based on a seed of 1+ track IDs
 def get_track_recs(sp, seeds, params):
-    req_params = create_query_object(seeds, params)
+    req_params = create_query_object(params)
     recs = []
     try:
-        tracks = sp.recommendations(req_params)
+        tracks = sp.recommendations(
+            limit = os.environ["rec_limit"],
+            seed_tracks = seeds,
+            kwargs = req_params
+        )
         for track in tracks['tracks']:
             recs.append(track['id'])
         return recs

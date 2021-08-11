@@ -21,6 +21,10 @@ def load_playlist(DEBUG, sp, songbank, params):
     playlist_id = songbank["playlistId"]
     saved_tracks = songbank["playlistTracks"]
 
+    ## If user provided reset keyword, remove all songs from playlist
+    if "reset" in params:
+        sp.user_playlist_replace_tracks(os.environ["spotify_user"], playlist_id=playlist_id, tracks=[])
+
     ## get list of current tracks in playlist
     if DEBUG: print("DEBUG: about to retrieve current tracks in playlist")
     try:
@@ -32,10 +36,6 @@ def load_playlist(DEBUG, sp, songbank, params):
         if DEBUG: print("DEBUG: successfully retrieved playlist tracks")
     except:
         return False
-
-    ## If user provided reset keyword, remove all songs from playlist
-    if "reset" in params:
-        sp.user_playlist_replace_tracks(os.environ["spotify_user"], playlist_id=playlist_id, tracks=[])
   
     ## Remove songs in saved songbank that are not longer in playlist
     ##  or have expired based on refresh count

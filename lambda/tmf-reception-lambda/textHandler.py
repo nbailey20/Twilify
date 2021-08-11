@@ -4,7 +4,7 @@ from twilio.rest import Client
 
 def parse_text(DEBUG, body):
     ## convert body to all lowercase first
-
+    body = body.lower()
 
     if DEBUG: print("DEBUG: received message " + str(body))
     playlist_params = {}
