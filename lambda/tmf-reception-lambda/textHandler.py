@@ -21,11 +21,49 @@ def parse_text(DEBUG, body):
         if DEBUG: print("DEBUG: found size keyword", match.group())
         playlist_params["size"] = int(match.group().split("+")[1])
 
-    ## check to see if keyword keyword included in text
-    match = re.search(r"keyword\+\w+", body)
+    ## check to see if happy keyword included in text
+    match = re.search(r"happy", body)
+    if match is not None and "sad" not in playlist_params:
+        if DEBUG: print("DEBUG: found happy keyword")
+        playlist_params["happy"] = True
+
+    ## check to see if sad keyword included in text
+    match = re.search(r"sad", body)
+    if match is not None and "happy" not in playlist_params:
+        if DEBUG: print("DEBUG: found sad keyword")
+        playlist_params["sad"] = True
+    
+    ## check to see if tempo keyword included in text
+    match = re.search(r"tempo\+[0-9]+", body)
     if match is not None:
-        if DEBUG: print("DEBUG: found keyword keyword", match.group())
-        playlist_params["keyword"] = match.group().split("+")[1]
+        if DEBUG: print("DEBUG: found tempo keyword", match.group())
+        playlist_params["tempo"] = int(match.group().split("+")[1])
+    
+    ## check to see if instrumental keyword included in text
+    match = re.search(r"instrumental", body)
+    if match is not None:
+        if DEBUG: print("DEBUG: found instrumental keyword")
+        playlist_params["instrumental"] = True
+    
+    ## check to see if size keyword included in text
+    match = re.search(r"energy\+\w+", body)
+    if match is not None:
+        if DEBUG: print("DEBUG: found energy keyword", match.group())
+        energy_type = match.group().split("+")[1]
+        if energy_type == "low":
+            playlist_params["energy"] = "low"
+        elif energy_type == "medium":
+            playlist_params["energy"] = "medium"
+        elif energy_type == "high":
+            playlist_params["energy"] = "high"
+        elif DEBUG: print("DEBUG: did not include valid energy type, ignoring")
+
+    ## check to see if instrumental keyword included in text
+    match = re.search(r"dance", body)
+    if match is not None:
+        if DEBUG: print("DEBUG: found dance keyword")
+        playlist_params["dance"] = True
+
     
     return playlist_params
 

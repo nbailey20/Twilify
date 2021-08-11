@@ -34,8 +34,8 @@ Deployment into AWS and automatic integration with Twilio webhook is working. In
 - Need ability to accidentally delete spotify playlist and resume without having to recreate songbank, overwrite keyword
 - [RESOLVED] Need ability to temporarily remove cost-saving mode for faster responses for a user-texted amount of time - VPC-less architecture
 - Use S3 bucket keys for KMS encryption to reduce cost 
-- Happy/sad keywords to influence playlist tracks
-- Tempo keyword to influence playlist tracks
-- Instrumental keyword for playlist, if present no vocals
-- Energy keyword - good workout tracks
-- Dance keyword - want danceable tracks
+- [TESTING]Happy/sad keywords to influence playlist tracks
+- [TESTING] Tempo keyword to influence playlist tracks
+- [TESTING] Instrumental keyword for playlist, if present no vocals
+- [TESTING] Energy keyword - good workout tracks
+- [TESTING] Dance keyword - want danceable tracks

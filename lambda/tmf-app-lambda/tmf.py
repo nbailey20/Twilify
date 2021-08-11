@@ -1,6 +1,6 @@
 ## Main application flow
 
-import os
+import os, json
 import musicQueryHandler, playlistHandler, twilioHandler, s3Handler, songbankHandler, tokenAuthHandler
 
 ## Genres we don't want event notifications for, even if the artist is popular af
@@ -13,8 +13,9 @@ DEBUG = True if os.environ["debug"] == "true" else False
 ############################################################# START MAIN CODE BLOCK ##########################################################
 def lambda_handler(event, _):
     if DEBUG: print("DEBUG: starting lambda_handler beginning function", event)
+    params = json.loads(event)
 
-    ## Make sure NAT gateway is accepting traffic
+    ## Make sure internet connectivity is working
     if not s3Handler.test_network_connectivity(DEBUG):
         if DEBUG: print("DEBUG: no network connectivity, about to send error text")
         twilioHandler.send_error_message("TMF has no Internet connectivity, aborting.")
@@ -57,8 +58,8 @@ def lambda_handler(event, _):
         return
 
 
-    ## Load playlist information
-    playlistTracks = playlistHandler.load_playlist(DEBUG, sp, songbank) 
+    ## Load playlist information, reset if user requested
+    playlistTracks = playlistHandler.load_playlist(DEBUG, sp, songbank, params) 
     ## Check explicitly for False since empty list is also not True
     if playlistTracks is False:
         print("DEBUG: could not retrieve tracks from playlist, about to send error text")
@@ -73,7 +74,7 @@ def lambda_handler(event, _):
     songs_to_add = []
     for i in range(num_songs_to_add):
         if DEBUG: print("DEBUG: getting track recommendation " + str(i+1))
-        new_song_id, songbank = musicQueryHandler.get_song_rec_from_seeds(DEBUG, sp, songbank)
+        new_song_id, songbank = musicQueryHandler.get_song_rec_from_seeds(DEBUG, sp, songbank, params)
         if new_song_id:
             songs_to_add.append(new_song_id)
     if DEBUG: print("DEBUG: finished collecting song recs")

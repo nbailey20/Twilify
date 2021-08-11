@@ -30,11 +30,43 @@ def get_fav_tracks(DEBUG, sp):
         return False
 
 
+## Create Spotify query parameter object from user-provided input
+def create_query_object(seeds, params):
+    ## add mandatory params to object
+    req_params = {
+        "limit": os.environ["rec_limit"],
+        "seed_tracks": seeds
+    }
+
+    ## add additional params if provided
+    if "happy" in params:
+        req_params["min_valence"] = 0.7
+    if "sad" in params:
+        req_params["max_valence"] = 0.4
+    if "tempo" in params:
+        req_params["target_tempo"] = params["tempo"]
+    if "instrumental" in params:
+        req_params["min_instrumentalness"] = 0.7
+    if "energy" in params:
+        if params["energy"] == "low":
+            req_params["target_energy"] = 0.3
+        elif params["energy"] == "medium":
+            req_params["target_energy"] = 0.5
+        elif params["energy"] == "high":
+            req_params["target_energy"] = 0.8
+    if "dance" in params:
+        req_params["min_danceability"] = 0.7
+
+    return req_params
+    
+
+
 ## Return a list of Spotify track recommendations based on a seed of 1+ track IDs
-def get_track_recs(sp, seeds):
+def get_track_recs(sp, seeds, params):
+    req_params = create_query_object(seeds, params)
     recs = []
     try:
-        tracks = sp.recommendations(seed_tracks=seeds, limit=os.environ["rec_limit"])
+        tracks = sp.recommendations(req_params)
         for track in tracks['tracks']:
             recs.append(track['id'])
         return recs
@@ -43,9 +75,10 @@ def get_track_recs(sp, seeds):
 
 
 ## Selects random songs saved in songbank as seeds for Spotify query
-## Updates songbank to ensure all seeds used equally
+## Combines with user-provided parameters in Spotify query
+## Updates songbank to ensure all song seeds used equally
 ## If song result exists and doesn't exist in current playlist, it is returned
-def get_song_rec_from_seeds(DEBUG, sp, songbank):
+def get_song_rec_from_seeds(DEBUG, sp, songbank, params):
     attempts = 0
     while attempts < 5:
 
@@ -68,7 +101,7 @@ def get_song_rec_from_seeds(DEBUG, sp, songbank):
 
         ## Get track recommendations based on seed(s) (default 5)
         ## If no recommendations available, start over with different seeds until max attempts reached
-        recs = get_track_recs(sp, seeds)
+        recs = get_track_recs(sp, seeds, params)
         if not recs:
             if DEBUG: print("DEBUG: did not find results with current seeds attempt " + str(attempts+1) + ", retrying")
             attempts += 1
