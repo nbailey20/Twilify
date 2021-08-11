@@ -21,10 +21,8 @@ def lambda_handler(event, _):
     if len(playlist_params.keys()) > 0:
         choices_captured = " ".join(playlist_params.keys()) + " requests captured"
 
-    response_header = "<Response><Message><Body>"
-    response_footer = "</Body></Message></Response>"
     response_body   = "Absolutely, new music update coming right away. "
-    textHandler.send_acknowledgement_text(DEBUG, response_header + response_body + choices_captured + response_footer)
+    textHandler.send_acknowledgement_text(DEBUG, response_body + choices_captured)
 
     ## launch app with parameters
     try:

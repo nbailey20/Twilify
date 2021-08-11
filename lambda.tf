@@ -105,6 +105,7 @@ resource "aws_iam_role" "tmfAppLambdaIamRole" {
             "Action": [
               "kms:Decrypt",
               "kms:Encrypt",
+              "kms:GenerateDataKey"
             ],
             "Resource": [
                 aws_kms_key.tmf_kms_key.arn
