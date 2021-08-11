@@ -198,7 +198,7 @@ resource "aws_iam_role" "tmfReceptionLambdaIamRole" {
 		          "lambda:InvokeFunction"
             ],
             "Resource": [
-                aws_lambda_function.tmfReceptionLambda.arn
+                aws_lambda_function.tmfAppLambda.arn
             ]
         }
     ]
@@ -220,16 +220,12 @@ resource "aws_lambda_function" "tmfReceptionLambda" {
   kms_key_arn   = aws_kms_key.tmf_kms_key.arn
   environment {
     variables = {
-      s3_template_url                = "https://s3.amazonaws.com/${aws_s3_bucket.setupBucket.id}/${aws_s3_bucket_object.tmfNetworkCft.key}"
       user_number                    = var.user_number
       twilio_number                  = var.twilio_number
       twilio_account_sid             = var.twilio_account_sid
-      twilio_auth_token              = var.twilio_auth_token
-      sns_topic_arn                  = aws_sns_topic.tmfSnsTopic.arn 
+      twilio_auth_token              = var.twilio_auth_token 
       tmf_app_lambda_arn             = "${aws_lambda_function.tmfAppLambda.arn}:$LATEST"
       num_songs_in_playlist          = var.num_songs_in_playlist
-      playlist_params_parameter_name = aws_ssm_parameter.playlist_text_params.name
-      parameter_kms_key_arn          = aws_kms_key.tmf_kms_key.arn
       debug                          = var.debug
     }
   }
