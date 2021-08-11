@@ -57,15 +57,6 @@ resource "aws_iam_role" "tmfAppLambdaIamRole" {
                 "${aws_s3_bucket.songbankBucket.arn}/*"
             ]
         },
-        #{
-        #    "Effect": "Allow",
-        #    "Action": [
-        #        "s3:ListBucket"
-        #    ],
-        #    "Resource": [
-        #        aws_s3_bucket.songbankBucket.arn
-        #    ]
-        #}
     ]
 }
     )
