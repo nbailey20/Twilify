@@ -2,4 +2,5 @@
 .terraform*
 *.tfvars*
 lambda/tmf-app-lambda/libraries/*
+lambda/tmf-reception-lambda/libraries/*
 *.zip

@@ -11,9 +11,6 @@ def compare_event_to_valid(valid_dict, event_dict):
     return True
 
 
-
-
-
 def test_valid_sms_event(event):
     valid_sms = {
         "SmsStatus": "received",
@@ -25,67 +22,8 @@ def test_valid_sms_event(event):
     return compare_event_to_valid(valid_sms, event)
 
 
-
-def test_valid_sns_event(event):
-    sns = event["Sns"]
-    valid_sns = {
-        "Subject":    "AWS CloudFormation Notification",
-        "TopicArn":   os.environ["sns_topic_arn"]
-    }
-    ## compare received event against valid event fields
-    if not compare_event_to_valid(valid_sns, sns) or not "Message" in sns:
-        return False
-
-
-    valid_message = {
-        "ResourceStatus": "CREATE_COMPLETE",
-        "ResourceType":   "AWS::CloudFormation::Stack",
-        "StackName":      "tmf-network"
-    }
-    ## parse event message details of the form Key='Value'\n...
-    message_list = sns["Message"].split("\n")
-    message_dict = {}
-    for field in message_list:
-        pair = field.split("=")
-        if len(pair) == 2:
-            message_dict[pair[0]] = pair[1].replace("'","")
-
-    ## compare received message to valid message fields
-    return compare_event_to_valid(valid_message, message_dict)
-
-
-
-
-def test_valid_lambda_event(event):
-    ## check request context 
-    request = event["requestContext"]
-    valid_request_context = {
-            "functionArn": os.environ["tmf_app_lambda_arn"]
-    }
-    if not compare_event_to_valid(valid_request_context, request):
-        return False
-    return True
-
-
-
-
-def parse_event(event):
+def validate_text_event(event):
     ## handle SMS events
     if "SmsSid" in event and test_valid_sms_event(event):
-        return "sms"
-
-    ## handle SNS notifications
-    if "Records" in event:
-        event = event["Records"][0]
-        if event["EventSource"] == "aws:sns" and test_valid_sns_event(event):
-            return "sns"
-
-    ## handle TMF invocation messages
-    if "requestContext" in event and "functionArn" in event["requestContext"]:
-        if test_valid_lambda_event(event):
-            return "lambda"
-    
-    ## no valid event detected
+        return True
     return False
-
-    
