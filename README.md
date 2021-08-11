@@ -30,7 +30,12 @@ Deployment into AWS and automatic integration with Twilio webhook is working. In
 - [RESOLVED] Update setup script to invoke Twilio API to update phone number instead of manually copy/pasting with MFA login
 - Need ability to specify number of songs via Hello text to TMF - how to go from larger to smaller? A: use reset keyword or manually remove enough songs to reach desired size
 - [TESTING] Need ability to specify that all songs are replaced via Hello text - reset keyword
-- [TESTING] Need ability to loosely control playlist via Hello text - specific keyword to include in search query
+- [TESTING] Need ability to loosely control playlist via Hello text - specific keywords to influence in search query
 - Need ability to accidentally delete spotify playlist and resume without having to recreate songbank, overwrite keyword
 - [RESOLVED] Need ability to temporarily remove cost-saving mode for faster responses for a user-texted amount of time - VPC-less architecture
 - Use S3 bucket keys for KMS encryption to reduce cost 
+- Happy/sad keywords to influence playlist tracks
+- Tempo keyword to influence playlist tracks
+- Instrumental keyword for playlist, if present no vocals
+- Energy keyword - good workout tracks
+- Dance keyword - want danceable tracks
