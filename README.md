@@ -29,7 +29,7 @@ Deployment into AWS and automatic integration with Twilio webhook is working. In
 - TMF ignores existing Spotify playlists with same name upon app setup, will create new playlist instead of choosing existing (should be variable option to overwrite)
 - [RESOLVED] Update setup script to invoke Twilio API to update phone number instead of manually copy/pasting with MFA login
 - Need ability to specify number of songs via Hello text to TMF - how to go from larger to smaller? A: use reset keyword or manually remove enough songs to reach desired size
-- [TESTING] Need ability to specify that all songs are replaced via Hello text - reset keyword
+- [RESOLVED] Need ability to specify that all songs are replaced via Hello text - reset keyword
 - [TESTING] Need ability to loosely control playlist via Hello text - specific keywords to influence in search query
 - Need ability to accidentally delete spotify playlist and resume without having to recreate songbank, overwrite keyword
 - [RESOLVED] Need ability to temporarily remove cost-saving mode for faster responses for a user-texted amount of time - VPC-less architecture
