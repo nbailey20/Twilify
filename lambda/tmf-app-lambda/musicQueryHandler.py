@@ -80,7 +80,7 @@ def get_track_recs(sp, seeds, params):
 ## Combines with user-provided parameters in Spotify query
 ## Updates songbank to ensure all song seeds used equally
 ## If song result exists and doesn't exist in current playlist, it is returned
-def get_song_rec_from_seeds(DEBUG, sp, songbank, params, num_songs):
+def get_song_recs_from_seeds(DEBUG, sp, songbank, params, num_songs):
     songs_list = []
     for i in range(num_songs):
         if DEBUG: print("DEBUG: getting track recommendation " + str(i+1))
@@ -111,7 +111,7 @@ def get_song_rec_from_seeds(DEBUG, sp, songbank, params, num_songs):
             ## If no recommendations available, start over with different seeds until max attempts reached
             recs = get_track_recs(sp, seeds, params)
             if not recs:
-                if DEBUG: print("DEBUG: did not find results with current seeds attempt " + str(attempts+1) + ", retrying")
+                if DEBUG: print("DEBUG: did not find results with current seeds attempt " + str(attempts+1) + "/5")
                 attempts += 1
                 continue
 
@@ -126,23 +126,22 @@ def get_song_rec_from_seeds(DEBUG, sp, songbank, params, num_songs):
             for st in songbank['playlistTracks']:
                 if st['id'] == suggested:
                     already_exists = True
-                    if DEBUG: print("DEBUG: song is already in playlist from previous iteration, trying again")
+                    if DEBUG: print("DEBUG: song is already in playlist from previous iteration, attempt " + str(attempts+1) + "/5")
                     break
 
             ## Make sure song hasn't been suggested already this iteration
             for id in songs_list:
                 if id == suggested:
                     already_exists = True
-                    if DEBUG: print("DEBUG: song was already discovered this iteration, trying again")
+                    if DEBUG: print("DEBUG: song was already discovered this iteration, attempt " + str(attempts+1) + "/5")
                     break
 
             ## save suggested song
             if not already_exists:
                 if DEBUG: print("DEBUG: found good track recommendation")
                 songs_list.append(suggested)
+                break
+            else:
+                attempts += 1
 
-        ## If could not get recommendation, don't try forever
-        if DEBUG: print("DEBUG: could not get track recommendation, giving up")
-        continue
-    
     return [songs_list, songbank]

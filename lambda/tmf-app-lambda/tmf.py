@@ -93,10 +93,10 @@ def lambda_handler(event, _):
         twilioHandler.send_completed_message("No tracks to update this time!")
     elif num_songs_to_add != len(songs_to_add):
         if DEBUG: print("DEBUG: fairly successfully completed TMF iteration, about to send success text")
-        twilioHandler.send_completed_message("I was able to find " + str(songs_to_add) + "/" + str(num_songs_to_add) + " songs, take delight in the feeling of thoughts!")
+        twilioHandler.send_completed_message("Here are " + str(len(songs_to_add)) + "/" + str(num_songs_to_add) + " songs, the desired number could not be found")
     else:
         if DEBUG: print("DEBUG: successfully completed TMF iteration, about to send success text")
-        twilioHandler.send_completed_message("TMF Song Generation Complete! Enjoy your new " + str(num_songs_to_add) + " songs :)")
+        twilioHandler.send_completed_message("Enjoy your new " + str(num_songs_to_add) + " songs :)")
     return {
         "status": "200",
         "body": "success"

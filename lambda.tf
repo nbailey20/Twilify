@@ -240,7 +240,7 @@ resource "aws_lambda_function" "tmfAppLambda" {
   function_name = "tmf"
   role          = aws_iam_role.tmfAppLambdaIamRole.arn
   handler       = "tmf.lambda_handler"
-  timeout       = 30
+  timeout       = 60
   runtime       = "python3.6"
   kms_key_arn   = aws_kms_key.tmf_kms_key.arn
   environment {
