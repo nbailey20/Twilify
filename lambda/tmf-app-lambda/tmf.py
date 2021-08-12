@@ -62,7 +62,7 @@ def lambda_handler(event, _):
     playlistTracks = playlistHandler.load_playlist(DEBUG, sp, songbank, params) 
     ## Check explicitly for False since empty list is also not True
     if playlistTracks is False:
-        print("DEBUG: could not retrieve tracks from playlist, about to send error text")
+        if DEBUG: print("DEBUG: could not retrieve tracks from playlist, about to send error text")
         twilioHandler.send_error_message("Cannot load playlist, aborting.")
         return
 
@@ -74,6 +74,7 @@ def lambda_handler(event, _):
     songs_to_add = []
     for i in range(num_songs_to_add):
         if DEBUG: print("DEBUG: getting track recommendation " + str(i+1))
+        print("WTF:", songbank)
         new_song_id, songbank = musicQueryHandler.get_song_rec_from_seeds(DEBUG, sp, songbank, params)
         if new_song_id:
             songs_to_add.append(new_song_id)

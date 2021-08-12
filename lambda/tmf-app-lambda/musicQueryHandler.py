@@ -37,22 +37,23 @@ def create_query_object(params):
 
     ## add additional params if provided
     if "happy" in params:
-        req_params["min_valence"] = 0.7
+        req_params["min_valence"] = 0.8
     if "sad" in params:
-        req_params["max_valence"] = 0.4
+        req_params["max_valence"] = 0.2
     if "tempo" in params:
         req_params["target_tempo"] = params["tempo"]
     if "instrumental" in params:
-        req_params["min_instrumentalness"] = 0.7
+        req_params["min_instrumentalness"] = 0.8
     if "energy" in params:
         if params["energy"] == "low":
-            req_params["target_energy"] = 0.3
+            req_params["max_energy"] = 0.3
         elif params["energy"] == "medium":
-            req_params["target_energy"] = 0.5
+            req_params["max_energy"] = 0.7
+            req_params["min_energy"] = 0.4
         elif params["energy"] == "high":
-            req_params["target_energy"] = 0.8
+            req_params["min_energy"] = 0.7
     if "dance" in params:
-        req_params["min_danceability"] = 0.7
+        req_params["min_danceability"] = 0.8
 
     return req_params
     
@@ -66,7 +67,7 @@ def get_track_recs(sp, seeds, params):
         tracks = sp.recommendations(
             limit = os.environ["rec_limit"],
             seed_tracks = seeds,
-            kwargs = req_params
+            **req_params
         )
         for track in tracks['tracks']:
             recs.append(track['id'])
@@ -100,6 +101,9 @@ def get_song_rec_from_seeds(DEBUG, sp, songbank, params):
             seeds.append(songbank["new"][index])
             songbank["new"] = songbank["new"][:index] + songbank["new"][index+1:]
 
+        ## Move used seed(s) to used list in songbank
+        songbank["used"] += seeds
+
         ## Get track recommendations based on seed(s) (default 5)
         ## If no recommendations available, start over with different seeds until max attempts reached
         recs = get_track_recs(sp, seeds, params)
@@ -107,9 +111,6 @@ def get_song_rec_from_seeds(DEBUG, sp, songbank, params):
             if DEBUG: print("DEBUG: did not find results with current seeds attempt " + str(attempts+1) + ", retrying")
             attempts += 1
             continue
-
-        ## Move used seed(s) to used list in songbank
-        songbank["used"] += seeds
 
         ## Choose random recommended track
         recSize = len(recs)
@@ -131,4 +132,5 @@ def get_song_rec_from_seeds(DEBUG, sp, songbank, params):
 
     ## If could not get recommendation, don't try forever
     if DEBUG: print("DEBUG: could not get track recommendation, giving up")
-    return [False, False]
+    print("WTF: ", songbank)
+    return [False, songbank]

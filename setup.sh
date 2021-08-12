@@ -2,20 +2,22 @@
 
 echo "Building tmf zip file from sources..."
 cd lambda/tmf-app-lambda/libraries
+rm -f ../tmf-app-lambda.zip > /dev/null 2>&1
 7z a -r ../tmf-app-lambda.zip .  > /dev/null 2>&1
 cd ..
 7z a tmf-app-lambda.zip *.py > /dev/null 2>&1
 
 echo "Building tmf reception zip file from sources..."
 cd ../tmf-reception-lambda/libraries
+rm -f ../tmf-reception-lambda.zip > /dev/null 2>&1
 7z a -r ../tmf-reception-lambda.zip .  > /dev/null 2>&1
 cd ..
 7z a tmf-reception-lambda.zip *.py  > /dev/null 2>&1
 cd ../..
 
 echo "Initializing and building application..."
-terraform init  > /dev/null 2>&1
-terraform plan  > /dev/null 2>&1
+#terraform init  > /dev/null 2>&1
+#terraform plan  > /dev/null 2>&1
 terraform apply -auto-approve
 
 account=$(terraform output -raw account_sid)

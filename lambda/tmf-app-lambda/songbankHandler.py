@@ -39,9 +39,9 @@ def load_songbank(DEBUG, sp, songbank_json):
     except:
         if DEBUG: print("DEBUG: did not find any known songbank data")
 
-    ## if songbank not initialized or expired, then build
-    if expired == None or expired == True:
-        if DEBUG: print("DEBUG: creating new songbank data")
+    ## if songbank not initialized, then get new seeds
+    if expired == None:
+        if DEBUG: print("DEBUG: initializing new songbank")
         new_tracks = musicQueryHandler.get_fav_tracks(DEBUG, sp)
         if new_tracks:
             return {
@@ -54,6 +54,23 @@ def load_songbank(DEBUG, sp, songbank_json):
         else:
             if DEBUG: print("DEBUG: could not create new songbank data")
             return False
+
+    ## if songbank expired, then get new seeds and keep track of current playlist
+    elif expired == True:
+        if DEBUG: print("DEBUG: rebuilding expired songbank")
+        new_tracks = musicQueryHandler.get_fav_tracks(DEBUG, sp)
+        if new_tracks:
+            return {
+                "new": new_tracks, 
+                "used": [], 
+                "numCycles": 0, 
+                "playlistId": playlist_id, 
+                "playlistTracks": songbank_json["playlistTracks"], 
+            }
+        else:
+            if DEBUG: print("DEBUG: could not rebuild songbank data")
+            return False
+
     else:
         ## make sure up-to-date Spotify playlist ID in songbank
         songbank_json["playlistID"] = playlist_id
