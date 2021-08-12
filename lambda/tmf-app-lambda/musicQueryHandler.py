@@ -80,57 +80,69 @@ def get_track_recs(sp, seeds, params):
 ## Combines with user-provided parameters in Spotify query
 ## Updates songbank to ensure all song seeds used equally
 ## If song result exists and doesn't exist in current playlist, it is returned
-def get_song_rec_from_seeds(DEBUG, sp, songbank, params):
-    attempts = 0
-    while attempts < 5:
+def get_song_rec_from_seeds(DEBUG, sp, songbank, params, num_songs):
+    songs_list = []
+    for i in range(num_songs):
+        if DEBUG: print("DEBUG: getting track recommendation " + str(i+1))
+        attempts = 0
+        while attempts < 5:
 
-        ## Get random seed size [1,3] for song generation
-        seedSize = randrange(3)+1
+            ## Get random seed size [1,3] for song generation
+            seedSize = randrange(3)+1
 
-        ## Make sure we have seedSize songs in new songbank list to choose from
-        ## if not, add all used songs back to new before choosing
-        if seedSize > len(songbank["new"]):
-            songbank["new"] += songbank["used"]
-            songbank["used"] = []
-            songbank["numCycles"] += 1
+            ## Make sure we have seedSize songs in new songbank list to choose from
+            ## if not, add all used songs back to new before choosing
+            if seedSize > len(songbank["new"]):
+                songbank["new"] += songbank["used"]
+                songbank["used"] = []
+                songbank["numCycles"] += 1
 
-        ## Get seedSize # of random new track IDs, remove IDs from new list in songbank
-        seeds = []
-        for _ in range(seedSize):
-            index = randrange(len(songbank["new"]))
-            seeds.append(songbank["new"][index])
-            songbank["new"] = songbank["new"][:index] + songbank["new"][index+1:]
+            ## Get seedSize # of random new track IDs, remove IDs from new list in songbank
+            seeds = []
+            for _ in range(seedSize):
+                index = randrange(len(songbank["new"]))
+                seeds.append(songbank["new"][index])
+                songbank["new"] = songbank["new"][:index] + songbank["new"][index+1:]
 
-        ## Move used seed(s) to used list in songbank
-        songbank["used"] += seeds
+            ## Move used seed(s) to used list in songbank
+            songbank["used"] += seeds
 
-        ## Get track recommendations based on seed(s) (default 5)
-        ## If no recommendations available, start over with different seeds until max attempts reached
-        recs = get_track_recs(sp, seeds, params)
-        if not recs:
-            if DEBUG: print("DEBUG: did not find results with current seeds attempt " + str(attempts+1) + ", retrying")
-            attempts += 1
-            continue
+            ## Get track recommendations based on seed(s) (default 5)
+            ## If no recommendations available, start over with different seeds until max attempts reached
+            recs = get_track_recs(sp, seeds, params)
+            if not recs:
+                if DEBUG: print("DEBUG: did not find results with current seeds attempt " + str(attempts+1) + ", retrying")
+                attempts += 1
+                continue
 
-        ## Choose random recommended track
-        recSize = len(recs)
-        index = randrange(recSize)
-        suggested = recs[index]
-        if DEBUG: print("DEBUG: found potential track")
+            ## Choose random recommended track
+            recSize = len(recs)
+            index = randrange(recSize)
+            suggested = recs[index]
+            if DEBUG: print("DEBUG: found potential track")
 
-        ## Make sure song isn't already in songbank
-        already_exists = False
-        for st in songbank['playlistTracks']:
-            if st['id'] == suggested:
-                already_exists = True
-                if DEBUG: print("DEBUG: song is already in playlist, try again lol")
-                break
-        ## return suggested song and updated songbank
-        if not already_exists:
-            if DEBUG: print("DEBUG: found good track recommendation")
-            return [suggested, songbank]
+            ## Make sure song isn't already in songbank from previous iteration
+            already_exists = False
+            for st in songbank['playlistTracks']:
+                if st['id'] == suggested:
+                    already_exists = True
+                    if DEBUG: print("DEBUG: song is already in playlist from previous iteration, trying again")
+                    break
 
-    ## If could not get recommendation, don't try forever
-    if DEBUG: print("DEBUG: could not get track recommendation, giving up")
-    print("WTF: ", songbank)
-    return [False, songbank]
+            ## Make sure song hasn't been suggested already this iteration
+            for id in songs_list:
+                if id == suggested:
+                    already_exists = True
+                    if DEBUG: print("DEBUG: song was already discovered this iteration, trying again")
+                    break
+
+            ## save suggested song
+            if not already_exists:
+                if DEBUG: print("DEBUG: found good track recommendation")
+                songs_list.append(suggested)
+
+        ## If could not get recommendation, don't try forever
+        if DEBUG: print("DEBUG: could not get track recommendation, giving up")
+        continue
+    
+    return [songs_list, songbank]
