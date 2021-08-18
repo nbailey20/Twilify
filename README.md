@@ -8,7 +8,7 @@ Easy AWS-based serverless deployment that is completely pay-as-you-use (besides 
 3. Text your Trusty Music Fabricator to say hi, and enjoy :) 
 4. Terraform destroy to get rid of everything in AWS if you want to 'uninstall', don't forget to release Twilio number!
 
-## Current Version: 0.6.0
+## Current Version: 1.0.0
 Deployment into AWS and automatic integration with Twilio webhook is working. Initial playlist is created with name "Trusty Music Fabricator" with correct number of songs, orders of magnitude faster than previous versions. Starting to introduce playlist customization through text body. 
 
 ## Usage Instructions
