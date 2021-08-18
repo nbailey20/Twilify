@@ -26,7 +26,7 @@ def send_completed_message(message):
     try:
         client = Client(account_sid, auth_token)
         client.messages.create(
-            body="TMF Song Generation Complete!:\n" + message,
+            body="TMF Song Generation Complete!\n" + message,
             from_=os.environ["twilio_number"],
             to=os.environ["user_number"]
         )

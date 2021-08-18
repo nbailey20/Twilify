@@ -1,10 +1,7 @@
 ## Main application flow
 
-import os
+import os, json
 import musicQueryHandler, playlistHandler, twilioHandler, s3Handler, songbankHandler, tokenAuthHandler
-
-## Genres we don't want event notifications for, even if the artist is popular af
-#BLACKLIST = ["black-metal", "bluegrass", "death-metal", "country", "heavy-metal", "metal", "alternative country"]
 
 ## Terraform bools not capitalized unlike Python
 DEBUG = True if os.environ["debug"] == "true" else False
@@ -13,8 +10,9 @@ DEBUG = True if os.environ["debug"] == "true" else False
 ############################################################# START MAIN CODE BLOCK ##########################################################
 def lambda_handler(event, _):
     if DEBUG: print("DEBUG: starting lambda_handler beginning function", event)
+    params = event
 
-    ## Make sure NAT gateway is accepting traffic
+    ## Make sure internet connectivity is working
     if not s3Handler.test_network_connectivity(DEBUG):
         if DEBUG: print("DEBUG: no network connectivity, about to send error text")
         twilioHandler.send_error_message("TMF has no Internet connectivity, aborting.")
@@ -57,25 +55,20 @@ def lambda_handler(event, _):
         return
 
 
-    ## Load playlist information
-    playlistTracks = playlistHandler.load_playlist(DEBUG, sp, songbank) 
+    ## Load playlist information, reset if user requested
+    playlistTracks = playlistHandler.load_playlist(DEBUG, sp, songbank, params) 
     ## Check explicitly for False since empty list is also not True
     if playlistTracks is False:
-        print("DEBUG: could not retrieve tracks from playlist, about to send error text")
+        if DEBUG: print("DEBUG: could not retrieve tracks from playlist, about to send error text")
         twilioHandler.send_error_message("Cannot load playlist, aborting.")
         return
 
 
-    ## For each song to add, get a recommendation
+    ## get appropriate number of song recommendations
     num_songs_to_add = int(os.environ["num_songs_in_playlist"]) - len(playlistTracks) 
     if DEBUG: print("DEBUG: will attempt to add " + str(num_songs_to_add) + " songs to the playlist")
 
-    songs_to_add = []
-    for i in range(num_songs_to_add):
-        if DEBUG: print("DEBUG: getting track recommendation " + str(i+1))
-        new_song_id, songbank = musicQueryHandler.get_song_rec_from_seeds(DEBUG, sp, songbank)
-        if new_song_id:
-            songs_to_add.append(new_song_id)
+    songs_to_add, songbank = musicQueryHandler.get_song_recs_from_seeds(DEBUG, sp, songbank, params, num_songs_to_add)
     if DEBUG: print("DEBUG: finished collecting song recs")
 
 
@@ -98,6 +91,9 @@ def lambda_handler(event, _):
     if num_songs_to_add == 0:
         if DEBUG: print("DEBUG: no tracks to add to playlist, texting user TMF has nothing to do")
         twilioHandler.send_completed_message("No tracks to update this time!")
+    elif num_songs_to_add != len(songs_to_add):
+        if DEBUG: print("DEBUG: fairly successfully completed TMF iteration, about to send success text")
+        twilioHandler.send_completed_message("Here are " + str(len(songs_to_add)) + "/" + str(num_songs_to_add) + " songs, the desired number could not be found")
     else:
         if DEBUG: print("DEBUG: successfully completed TMF iteration, about to send success text")
         twilioHandler.send_completed_message("Enjoy your new " + str(num_songs_to_add) + " songs :)")

@@ -16,10 +16,14 @@ def create_new_playlist(DEBUG, sp):
     
 ## Function to return current, non-expired songs in Spotify playlist and local songbank
 ##  based on neutral refresh count and manual playlist deletes
-def load_playlist(DEBUG, sp, songbank):
+def load_playlist(DEBUG, sp, songbank, params):
     if DEBUG: print("DEBUG: trying to load Spotify playlist")
     playlist_id = songbank["playlistId"]
     saved_tracks = songbank["playlistTracks"]
+
+    ## If user provided reset keyword, remove all songs from playlist
+    if "reset" in params:
+        sp.user_playlist_replace_tracks(os.environ["spotify_user"], playlist_id=playlist_id, tracks=[])
 
     ## get list of current tracks in playlist
     if DEBUG: print("DEBUG: about to retrieve current tracks in playlist")

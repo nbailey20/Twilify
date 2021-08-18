@@ -16,12 +16,13 @@ def lambda_handler(event, _):
     if DEBUG: print("DEBUG: validated text event")
 
     ## if user texted, acknowledge and echo back any keywords found
+    response_body   = "New music update coming right away. \n"
     playlist_params = textHandler.parse_text(DEBUG, event["Body"])
+
     choices_captured = "Message received!"
     if len(playlist_params.keys()) > 0:
         choices_captured = " ".join(playlist_params.keys()) + " requests captured"
-
-    response_body   = "Absolutely, new music update coming right away. "
+    
     textHandler.send_acknowledgement_text(DEBUG, response_body + choices_captured)
 
     ## launch app with parameters
