@@ -1,5 +1,6 @@
 import re, os
 from twilio.rest import Client
+from urllib.parse import unquote
 
 
 def parse_text(DEBUG, body):
@@ -89,7 +90,7 @@ def send_acknowledgement_text(DEBUG, user_number, response):
         client.messages.create(
             body = response,
             from_= os.environ["twilio_number"],
-            to   = user_number
+            to   = unquote(user_number)
         )
         if DEBUG: print("DEBUG: successfully sent acknowledgement text")
     except:

@@ -2,6 +2,7 @@
 
 from twilio.rest import Client
 import os
+from urllib.parse import unquote
 
 
 def send_error_message(user_number, message):
@@ -12,7 +13,7 @@ def send_error_message(user_number, message):
         client.messages.create(
             body="TMF Error:\n" + message,
             from_=os.environ["twilio_number"],
-            to=user_number
+            to=unquote(user_number)
         )
     except:
         print("ERROR: failed to send error text")
@@ -29,7 +30,7 @@ def send_completed_message(user_number, message):
         client.messages.create(
             body="TMF Song Generation Complete!\n" + message,
             from_=os.environ["twilio_number"],
-            to=user_number
+            to=unquote(user_number)
         )
     except:
         print("ERROR: failed to send success text")
