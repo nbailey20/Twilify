@@ -15,10 +15,12 @@ def create_new_playlist(DEBUG, sp):
 
 
 def search_for_previous_playlist(DEBUG, sp):
-    try:
+    #try:
         name = os.environ["playlist_name"]
+        print("Playlist name: ", name)
         res = sp.user_playlists()
         while res:
+            print("res len: ", len(res["items"]))
             for playlist in res["items"]:
                 if playlist["name"] == name:
                     if DEBUG: print("DEBUG: found existing playlist to overwrite")
@@ -29,9 +31,9 @@ def search_for_previous_playlist(DEBUG, sp):
                 res = None
         if DEBUG: print("DEBUG: did not find existing playlist with appropriate name")
         return False
-    except:
-        if DEBUG: print("DEBUG: error while searching existing user playlists, continuing")
-        return False
+   # except:
+   #     if DEBUG: print("DEBUG: error while searching existing user playlists, continuing")
+   #     return False
 
         
     
@@ -100,8 +102,9 @@ def save_playlist(DEBUG, sp, playlist_id, tracks_to_add):
     if DEBUG: print("DEBUG: trying to update Spotify playlist with new tracks")
     ## If no tracks to add, we're done
     if len(tracks_to_add) > 0:
+        track_ids = [x["id"] for x in tracks_to_add]
         try:
-            sp.user_playlist_add_tracks(os.environ["spotify_user"], playlist_id, tracks_to_add)
+            sp.user_playlist_add_tracks(os.environ["spotify_user"], playlist_id, track_ids)
             if DEBUG: print("DEBUG: successfully updated playlist")
         except:
             if DEBUG: print("DEBUG: could not update playlist")
