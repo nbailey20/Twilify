@@ -43,6 +43,6 @@ Deployment into AWS and automatic integration with Twilio webhook is working. In
 - Add S3 bucket versioning to be able to lookup previous songbanks if desired, lifecycle policy to avoid buildup
 - [RESOLVED] Seeds keyword along with track number in playlist to learn which songbank songs were used to generate the playlist song - need to keep track of 'parents' in songbank
 - [RESOLVED] Overall make songbank more readable with words instead of just spotify IDs?
-
+- "classic" song ratio keyword, want to mostly enjoy new stuff or plan to get drunk and sing to what you already love? - long term favs
 
 - Multiplayer joint playlists??? - entirely new authentication setup required

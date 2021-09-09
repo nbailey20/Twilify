@@ -2,6 +2,7 @@ import boto3
 import os, json
 from eventHandler import validate_text_event
 import textHandler
+from urllib.parse import unquote
 
 ## Terraform bools not capitalized unlike Python
 DEBUG = True if os.environ["debug"] == "true" else False
@@ -11,7 +12,7 @@ def lambda_handler(event, _):
     if DEBUG: print("DEBUG: starting TMF reception main function")
 
     ## validate text event
-    source_num = validate_text_event(event)
+    source_num = unquote(validate_text_event(event))
     if not source_num:
         return
     if DEBUG: print("DEBUG: validated text event")
@@ -29,7 +30,6 @@ def lambda_handler(event, _):
 
     ## launch app with parameters and number to txt back to
     playlist_params["user_number"] = source_num
-    print("USER NUMBER: ", source_num)
     try:
         if DEBUG: print("DEBUG: Launching TMF app")
         client = boto3.client("lambda")
@@ -40,6 +40,6 @@ def lambda_handler(event, _):
         )
         if DEBUG: print("DEBUG: successfully launched TMF app")
         return
-    except:
+    except:      
         if DEBUG: print("DEBUG: failed to invoke TMF lambda function.")
         return
