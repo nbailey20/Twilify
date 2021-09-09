@@ -41,8 +41,8 @@ Deployment into AWS and automatic integration with Twilio webhook is working. In
 - [RESOLVED] Size keyword to temporarily change number of songs in playlist - smaller size no longer issue as all songs reset by default, can't use with 'keep' unless desired size is larger than current playlist size
 - Want endless keyword so playlist keeps refreshing with new tracks as I listen without needing to text every so often, until I stop the endlessness via text
 - Add S3 bucket versioning to be able to lookup previous songbanks if desired, lifecycle policy to avoid buildup
-- [DEVELOPMENT] Seeds keyword along with track number in playlist to learn which songbank songs were used to generate the playlist song - need to keep track of 'parents' in songbank
-- [DEVELOPMENT] Overall make songbank more readable with words instead of just spotify IDs?
+- [RESOLVED] Seeds keyword along with track number in playlist to learn which songbank songs were used to generate the playlist song - need to keep track of 'parents' in songbank
+- [RESOLVED] Overall make songbank more readable with words instead of just spotify IDs?
 
 
 - Multiplayer joint playlists??? - entirely new authentication setup required

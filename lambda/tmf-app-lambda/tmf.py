@@ -75,7 +75,7 @@ def lambda_handler(event, _):
         track, seeds = songbankHandler.get_seeds_for_track(DEBUG, playlistTracks, params["seeds"])
         ## All done!
         if DEBUG: print("DEBUG: seed info gathered, texting user song gen info")
-        twilioHandler.send_completed_message(user_number, "Seeds of '" + track + "': " + " ".join(seeds))
+        twilioHandler.send_completed_message(user_number, "Seeds of '" + track + "': " + ", ".join(seeds))
         return {
         "status": "200",
         "body": "success"
