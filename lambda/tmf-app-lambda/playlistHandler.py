@@ -42,7 +42,7 @@ def load_playlist(DEBUG, sp, songbank, params):
     playlist_id = songbank["playlistId"]
     saved_tracks = songbank["playlistTracks"]
 
-    ## If user provided keep keyword, don't remove songs from playlist before update
+    ## If keep keyword set, don't remove songs from playlist by default
     if not "keep" in params:
         sp.user_playlist_replace_tracks(os.environ["spotify_user"], playlist_id=playlist_id, tracks=[])
 
@@ -58,7 +58,7 @@ def load_playlist(DEBUG, sp, songbank, params):
     except:
         return False
   
-    ## Remove songs in saved songbank that are not longer in playlist
+    ## Remove songs in saved songbank that are no longer in playlist
     if DEBUG: print("DEBUG: about to compare and update local songbank data with actual playlist data")
     index = 0
     num_deleted = 0

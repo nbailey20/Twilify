@@ -70,6 +70,12 @@ def parse_text(DEBUG, body):
         if DEBUG: print("DEBUG: found overwrite keyword")
         playlist_params["overwrite"] = True
 
+    ## check to see if seeds keyword included in text
+    match = re.search(r"seeds\+[0-9]+", body)
+    if match is not None:
+        if DEBUG: print("DEBUG: found seeds keyword", match.group())
+        playlist_params["seeds"] = int(match.group().split("+")[1])
+
     
     return playlist_params
 

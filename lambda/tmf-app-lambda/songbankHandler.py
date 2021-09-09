@@ -107,3 +107,12 @@ def save_songbank(DEBUG, songbank, songs_to_add, next_refresh_token):
     if s3Handler.write_file(DEBUG, songbank):
         return True
     return False
+
+
+
+def get_seeds_for_track(DEBUG, playlistTracks, track_num):
+    if DEBUG: print("DEBUG: about to pull seed data for track ", track_num)
+    track_data = playlistTracks[track_num]
+    track_name = track_data["name"]
+    track_seeds = [x["name"] for x in track_data["seeds"]]
+    return track_name, track_seeds

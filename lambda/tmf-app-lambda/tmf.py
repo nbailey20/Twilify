@@ -12,6 +12,10 @@ def lambda_handler(event, _):
     if DEBUG: print("DEBUG: starting lambda_handler beginning function", event)
     params = event
 
+    ## If user only wants seed info, don't update playlist, but need to load playlist and songbank
+    if "seeds" in params:
+        params["keep"] = True
+
     ## Make sure internet connectivity is working
     if not s3Handler.test_network_connectivity(DEBUG):
         if DEBUG: print("DEBUG: no network connectivity, about to send error text")
@@ -25,6 +29,7 @@ def lambda_handler(event, _):
         if DEBUG: print("DEBUG: could not retrieve songbank json from S3, about to send error text")
         twilioHandler.send_error_message("Could not read songbank file from S3, aborting.")
         return
+
 
     ## Retrieve and decrypt refresh token data from SSM Parameter Store
     current_refresh_token = tokenAuthHandler.retrieve_refresh_token(DEBUG)
@@ -62,6 +67,18 @@ def lambda_handler(event, _):
         if DEBUG: print("DEBUG: could not retrieve tracks from playlist, about to send error text")
         twilioHandler.send_error_message("Cannot load playlist, aborting.")
         return
+
+
+    ## Check if user wants new music or just song seed info
+    if "seeds" in params:
+        track, seeds = songbankHandler.get_seeds_for_track(DEBUG, songbank, playlistTracks, params["seeds"])
+        ## All done!
+        if DEBUG: print("DEBUG: seed info gathered, texting user song gen info")
+        twilioHandler.send_completed_message("Seeds of " + track + ": " + " ".join(seeds))
+        return {
+        "status": "200",
+        "body": "success"
+        }
 
 
     ## get appropriate number of song recommendations
