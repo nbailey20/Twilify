@@ -71,17 +71,17 @@ def lambda_handler(event, _):
 
     ## Check if user wants new music or just song seed info
     if "seeds" in params:
-        track, seeds = songbankHandler.get_seeds_for_track(DEBUG, songbank, playlistTracks, params["seeds"])
+        track, seeds = songbankHandler.get_seeds_for_track(DEBUG, playlistTracks, params["seeds"])
         ## All done!
         if DEBUG: print("DEBUG: seed info gathered, texting user song gen info")
-        twilioHandler.send_completed_message("Seeds of " + track + ": " + " ".join(seeds))
+        twilioHandler.send_completed_message("Seeds of '" + track + "': " + " ".join(seeds))
         return {
         "status": "200",
         "body": "success"
         }
 
 
-    ## get appropriate number of song recommendations
+    ## IF not, get appropriate number of song recommendations
     num_songs_to_add = int(os.environ["num_songs_in_playlist"]) - len(playlistTracks)
     if "size" in params:
         num_songs_to_add = int(params["size"]) - len(playlistTracks) 
