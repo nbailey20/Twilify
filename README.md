@@ -18,7 +18,7 @@ Deployment into AWS and automatic integration with Twilio webhook is working. In
 - For more customizable playlist, several keywords can be included in the text body, see table below
 
 |           Keyword           | Sample Usage in SMS Message |                                         Description if Required                                        |
-|:---------------------------:|-----------------------------|:------------------------------------------------------------------------------------------------------:|
+|:---------------------------:|:---------------------------:|:------------------------------------------------------------------------------------------------------:|
 | Energy [high\|medium\|low]  | energy medium               |                                                                                                        |
 | Happy                       | Happy yay!                  | Brighter                                                                                               |
 | Sad                         | sad :(                      | Darker                                                                                                 |
