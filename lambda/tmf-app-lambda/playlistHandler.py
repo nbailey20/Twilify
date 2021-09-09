@@ -15,14 +15,11 @@ def create_new_playlist(DEBUG, sp):
 
 
 def search_for_previous_playlist(DEBUG, sp):
-    #try:
+    try:
         name = os.environ["playlist_name"]
-        print("Playlist name: ", name)
         res = sp.user_playlists(os.environ["spotify_user"])
         while res:
-            print("res len: ", len(res["items"]))
             for playlist in res["items"]:
-                print("playlist name: ", playlist["name"])
                 if playlist["name"] == name:
                     if DEBUG: print("DEBUG: found existing playlist to overwrite")
                     return playlist["id"]
@@ -32,9 +29,9 @@ def search_for_previous_playlist(DEBUG, sp):
                 res = None
         if DEBUG: print("DEBUG: did not find existing playlist with appropriate name")
         return False
-   # except:
-   #     if DEBUG: print("DEBUG: error while searching existing user playlists, continuing")
-   #     return False
+    except:
+        if DEBUG: print("DEBUG: error while searching existing user playlists, continuing")
+        return False
 
         
     
