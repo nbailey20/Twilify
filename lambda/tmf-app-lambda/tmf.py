@@ -38,7 +38,7 @@ def lambda_handler(event, _):
     sp, next_refresh_token = tokenAuthHandler.auth_spotify(DEBUG, current_refresh_token)
     if not next_refresh_token:
         print("DEBUG: could not retrieve next refresh token from auth spotify, about to send error text")
-        twilioHandler.send_error_message("Could not get new access token from Spotify")
+        twilioHandler.send_error_message("Did not receive new access token from Spotify, please try again in case Spotify is currently busy.")
         return
     if not sp:
         print("DEBUG: could not retrieve api client object from auth spotify call, about to send error text")
