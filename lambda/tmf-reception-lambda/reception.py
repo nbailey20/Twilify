@@ -25,10 +25,11 @@ def lambda_handler(event, _):
     ## if user requested music, acknowledge and echo back any keywords detected
     if "seeds" not in playlist_params:
         response_body   = "New music update coming right away. \n"
-        textHandler.send_acknowledgement_text(DEBUG, response_body + choices_captured)
+        textHandler.send_acknowledgement_text(DEBUG, source_num, response_body + choices_captured)
 
     ## launch app with parameters and number to txt back to
     playlist_params["user_number"] = source_num
+    print("USER NUMBER: ", source_num)
     try:
         if DEBUG: print("DEBUG: Launching TMF app")
         client = boto3.client("lambda")

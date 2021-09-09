@@ -14,7 +14,7 @@ def compare_event_to_valid(valid_dict, event_dict):
 def test_valid_sms_event(event):
     valid_sms = {
         "SmsStatus": "received",
-        "From":      os.environ["user_numbers"],
+        "From":      os.environ["user_numbers"].split(","),
         "To":        os.environ["twilio_number"],
         "ToCountry": "US"
     }

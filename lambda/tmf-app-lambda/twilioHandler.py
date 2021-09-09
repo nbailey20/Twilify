@@ -21,6 +21,7 @@ def send_error_message(user_number, message):
 
 
 def send_completed_message(user_number, message):
+    print("User num", user_number)
     account_sid = os.environ["twilio_account_sid"]
     auth_token = os.environ["twilio_auth_token"]
     try:

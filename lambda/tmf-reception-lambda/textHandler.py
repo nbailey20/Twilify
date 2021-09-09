@@ -81,7 +81,7 @@ def parse_text(DEBUG, body):
 
 
 
-def send_acknowledgement_text(DEBUG, response):
+def send_acknowledgement_text(DEBUG, user_number, response):
     account_sid = os.environ["twilio_account_sid"]
     auth_token = os.environ["twilio_auth_token"]
     try:
@@ -89,7 +89,7 @@ def send_acknowledgement_text(DEBUG, response):
         client.messages.create(
             body = response,
             from_= os.environ["twilio_number"],
-            to   = os.environ["user_number"]
+            to   = user_number
         )
         if DEBUG: print("DEBUG: successfully sent acknowledgement text")
     except:
