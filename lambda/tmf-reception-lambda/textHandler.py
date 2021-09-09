@@ -64,6 +64,12 @@ def parse_text(DEBUG, body):
         if DEBUG: print("DEBUG: found dance keyword")
         playlist_params["dance"] = True
 
+    ## check to see if overwrite keyword included in text
+    match = re.search(r"overwrite", body)
+    if match is not None:
+        if DEBUG: print("DEBUG: found overwrite keyword")
+        playlist_params["overwrite"] = True
+
     
     return playlist_params
 
