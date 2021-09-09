@@ -19,15 +19,15 @@ Deployment into AWS and automatic integration with Twilio webhook is working. In
 
 |           Keyword           | Sample Usage in SMS Message |                                         Description if Required                                        |
 |:---------------------------:|-----------------------------|:------------------------------------------------------------------------------------------------------:|
-| Energy <high\|medium\|low>  | energy medium               |                                                                                                        |
+| Energy [high\|medium\|low]  | energy medium               |                                                                                                        |
 | Happy                       | Happy yay!                  | Brighter                                                                                               |
 | Sad                         | sad :(                      | Darker                                                                                                 |
 | Instrumental                | instrumental                | Less vocal                                                                                             |
-| Tempo <number>              | tempo 140                   |                                                                                                        |
+| Tempo [number]              | tempo 140                   |                                                                                                        |
 | Dance                       | DANCE party                 | More danceable songs                                                                                   |
-| Size <number>               | size 21                     | Add this many songs to the playlist for one iteration                                                  |
+| Size [number]               | size 21                     | Add this many songs to the playlist for one iteration                                                  |
 | Keep                        | keep                        | Does not get rid of all songs automatically,  attempts to add new songs to reach desired size          |
-| Seeds <number>              | seeds 9                     | Do not update playlist, but return name of song(s) that  helped generate the 9th track in the playlist |
+| Seeds [number]              | seeds 9                     | Do not update playlist, but return name of song(s) that  helped generate the 9th track in the playlist |
 
 
 ## Known Bugs / Issues / Needs
