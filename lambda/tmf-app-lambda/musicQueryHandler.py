@@ -62,11 +62,12 @@ def create_query_object(params):
 ## Return a list of Spotify track recommendations based on a seed of 1+ track IDs
 def get_track_recs(sp, seeds, params):
     req_params = create_query_object(params)
+    seed_ids = [x["id"] for x in seeds]
     recs = []
     try:
         tracks = sp.recommendations(
             limit = os.environ["rec_limit"],
-            seed_tracks = seeds,
+            seed_tracks = seed_ids,
             **req_params
         )
         for track in tracks["tracks"]:

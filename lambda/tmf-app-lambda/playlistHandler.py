@@ -18,12 +18,19 @@ def search_for_previous_playlist(DEBUG, sp):
     try:
         name = os.environ["playlist_name"]
         res = sp.user_playlists()
-        for playlist in res["items"]:
-            if playlist["name"] == name:
-                if DEBUG: print("DEBUG: found existing playlist to overwrite")
-                return playlist["id"]
-    except:
+        while res:
+            for playlist in res["items"]:
+                if playlist["name"] == name:
+                    if DEBUG: print("DEBUG: found existing playlist to overwrite")
+                    return playlist["id"]
+            if res["next"]:
+                res = sp.next(res)
+            else:
+                res = None
         if DEBUG: print("DEBUG: did not find existing playlist with appropriate name")
+        return False
+    except:
+        if DEBUG: print("DEBUG: error while searching existing user playlists, continuing")
         return False
 
         
