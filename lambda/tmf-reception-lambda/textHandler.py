@@ -10,10 +10,10 @@ def parse_text(DEBUG, body):
     playlist_params = {}
 
     ## check to see if reset keyword included in text
-    match = re.search(r"reset", body)
+    match = re.search(r"keep", body)
     if match is not None:
-        if DEBUG: print("DEBUG: found reset keyword")
-        playlist_params["reset"] = True
+        if DEBUG: print("DEBUG: found keep keyword")
+        playlist_params["keep"] = True
 
     ## check to see if size keyword included in text
     match = re.search(r"size\+[0-9]+", body)

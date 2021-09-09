@@ -8,7 +8,7 @@ Easy AWS-based serverless deployment that is completely pay-as-you-use (besides 
 3. Text your Trusty Music Fabricator to say hi, and enjoy :) 
 4. Terraform destroy to get rid of everything in AWS if you want to 'uninstall', don't forget to release Twilio number!
 
-## Current Version: 1.0.0
+## Current Version: 1.1.0
 Deployment into AWS and automatic integration with Twilio webhook is working. Initial playlist is created with name "Trusty Music Fabricator" with correct number of songs, orders of magnitude faster than previous versions. Starting to introduce playlist customization through text body. 
 
 ## Usage Instructions
@@ -26,16 +26,23 @@ Deployment into AWS and automatic integration with Twilio webhook is working. In
 - [RESOLVED] TMF can fail when writing new songbank back to S3, put object call is timing out - network connectivity check at start and max retries/timeouts added for boto3, verified retries via CloudWatch logs
 - [RESOLVED] Spotify calls can also timeout refreshing token - shorter timeout added, VPCless architecture
 - [RESOLVED] TMF silently fails when texted during network stack deletion - no issue if warmup message works, no warmup message error in 50+ deployments
-- TMF ignores existing Spotify playlists with same name upon app setup, will create new playlist instead of choosing existing (should be variable option to overwrite)
+- [DEVELOPMENT] TMF ignores existing Spotify playlists with same name upon app setup, will create new playlist instead of choosing existing (should be variable option to overwrite)
 - [RESOLVED] Update setup script to invoke Twilio API to update phone number instead of manually copy/pasting with MFA login
-- [TESTING] Playlist doesn't have correct number of songs after songbank reset
-- Need ability to accidentally delete spotify playlist and resume without having to recreate songbank, overwrite keyword
+- [RESOLVED] Playlist doesn't have correct number of songs after songbank reset
+- [DEVELOPMENT] Need ability to accidentally delete spotify playlist and resume without having to recreate songbank, overwrite keyword
 - [RESOLVED] Need ability to temporarily remove cost-saving mode for faster responses for a user-texted amount of time - VPC-less architecture
-- Use S3 bucket keys for KMS encryption to reduce cost 
-- [RESOLVED] Need ability to specify that all songs are replaced via Hello text - reset keyword
+- [BACKLOG] Use S3 bucket keys for KMS encryption to reduce cost 
+- [DEVELOPMENT] Need ability to specify that all songs are replaced via Hello text - reset keyword - changed to 'keep' as reset is default starting in v1.1
 - [RESOLVED] Happy/sad keywords to influence playlist tracks 
 - [RESOLVED] Tempo keyword to influence playlist tracks
 - [RESOLVED] Instrumental keyword for playlist, if present no vocals
 - [RESOLVED] Energy keyword - energy high, medium, or low
-- [RESOLVED] Dance keyword - want danceable tracks
-- Need size keyword to temporarily change number of songs in playlist - how to go from larger to smaller? A: use reset keyword or manually remove enough songs to reach desired size
+- [TESTING] Dance keyword - want danceable tracks, needs tuning
+- [DEVELOPMENT] Size keyword to temporarily change number of songs in playlist - smaller size no longer issue as all songs reset by default, can't use with 'keep' unless desired size is larger than current playlist size
+- Want endless keyword so playlist keeps refreshing with new tracks as I listen without needing to text every so often, until I stop the endlessness via text
+- Add S3 bucket versioning to be able to lookup previous songbanks if desired, lifecycle policy to avoid buildup
+- [DEVELOPMENT] Seeds keyword along with track number in playlist to learn which songbank songs were used to generate the playlist song - need to keep track of 'parents' in songbank
+- [DEVELOPMENT] Overall make songbank more readable with words instead of just spotify IDs?
+
+
+- Multiplayer joint playlists??? - entirely new authentication setup required

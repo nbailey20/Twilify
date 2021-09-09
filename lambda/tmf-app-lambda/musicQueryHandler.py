@@ -11,17 +11,17 @@ def get_fav_tracks(DEBUG, sp):
         tracks = sp.current_user_top_tracks(limit=30, time_range="long_term")
         tracks = tracks["items"]
         for track in tracks:
-            fav_tracks.append(track["id"])
+            fav_tracks.append({"name": track["name"], "id": track["id"]})
 
         tracks = sp.current_user_top_tracks(limit=20, time_range="medium_term")
         tracks = tracks["items"]
         for track in tracks:
-            fav_tracks.append(track["id"])
+            fav_tracks.append({"name": track["name"], "id": track["id"]})
 
         tracks = sp.current_user_top_tracks(limit=10, time_range="short_term")
         tracks = tracks["items"]
         for track in tracks:
-            fav_tracks.append(track["id"])
+            fav_tracks.append({"name": track["name"], "id": track["id"]})
         
         if DEBUG: print("DEBUG: successfully retrieved user's fav tracks")
         return fav_tracks
@@ -53,7 +53,7 @@ def create_query_object(params):
         elif params["energy"] == "high":
             req_params["min_energy"] = 0.7
     if "dance" in params:
-        req_params["min_danceability"] = 0.8
+        req_params["min_danceability"] = 0.6
 
     return req_params
     
@@ -69,8 +69,8 @@ def get_track_recs(sp, seeds, params):
             seed_tracks = seeds,
             **req_params
         )
-        for track in tracks['tracks']:
-            recs.append(track['id'])
+        for track in tracks["tracks"]:
+            recs.append({"name": track["name"], "id": track["id"], "seeds": seeds})
         return recs
     except:
         return False
@@ -124,7 +124,7 @@ def get_song_recs_from_seeds(DEBUG, sp, songbank, params, num_songs):
             ## Make sure song isn't already in songbank from previous iteration
             already_exists = False
             for st in songbank['playlistTracks']:
-                if st['id'] == suggested:
+                if st["id"] == suggested:
                     already_exists = True
                     if DEBUG: print("DEBUG: song is already in playlist from previous iteration, attempt " + str(attempts+1) + "/5")
                     break

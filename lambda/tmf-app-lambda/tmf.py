@@ -48,7 +48,7 @@ def lambda_handler(event, _):
 
     ## Initialize Songbank
     ## API client needed to create playlist if first time
-    songbank = songbankHandler.load_songbank(DEBUG, sp, songbank_json)
+    songbank = songbankHandler.load_songbank(DEBUG, sp, songbank_json, params)
     if not songbank:
         if DEBUG: print("DEBUG: did not return anything from load songbank call, about to send error text")
         twilioHandler.send_error_message("Cannot load songbank, aborting.")
@@ -65,7 +65,9 @@ def lambda_handler(event, _):
 
 
     ## get appropriate number of song recommendations
-    num_songs_to_add = int(os.environ["num_songs_in_playlist"]) - len(playlistTracks) 
+    num_songs_to_add = int(os.environ["num_songs_in_playlist"]) - len(playlistTracks)
+    if "size" in params:
+        num_songs_to_add = int(params["size"]) - len(playlistTracks) 
     if DEBUG: print("DEBUG: will attempt to add " + str(num_songs_to_add) + " songs to the playlist")
 
     songs_to_add, songbank = musicQueryHandler.get_song_recs_from_seeds(DEBUG, sp, songbank, params, num_songs_to_add)
