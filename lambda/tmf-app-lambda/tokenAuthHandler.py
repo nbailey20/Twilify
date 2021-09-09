@@ -53,7 +53,7 @@ def update_refresh_token(DEBUG, next_refresh_token):
 ## Function to return an API client and refresh token given Spotify Oauth creds
 ## [False, False] -> [sp, refresh_token] if successful
 def auth_spotify(DEBUG, refresh_token):
-    scope = "user-top-read playlist-modify-private" 
+    scope = "user-top-read playlist-modify-private playlist-modify-collaborative" 
     if DEBUG: print("DEBUG: about to create Spotify oauth client with refresh token")
     try:
         sp_oauth = SpotifyOAuth(
