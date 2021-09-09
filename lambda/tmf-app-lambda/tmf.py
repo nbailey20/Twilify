@@ -93,6 +93,9 @@ def lambda_handler(event, _):
     if num_songs_to_add == 0:
         if DEBUG: print("DEBUG: no tracks to add to playlist, texting user TMF has nothing to do")
         twilioHandler.send_completed_message("No tracks to update this time!")
+    elif num_songs_to_add < 0:
+        if DEBUG: print("DEBUG: user tried to keep playlist but decrease size, texting user that TMF can't tell which songs to remove and will not do anything")
+        twilioHandler.send_completed_message("Sorry, but I can't deliver the expected smaller size while keeping all current songs! Please try again.")
     elif num_songs_to_add != len(songs_to_add):
         if DEBUG: print("DEBUG: fairly successfully completed TMF iteration, about to send success text")
         twilioHandler.send_completed_message("Here are " + str(len(songs_to_add)) + "/" + str(num_songs_to_add) + " songs, the desired number could not be found")
