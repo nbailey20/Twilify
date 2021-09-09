@@ -221,7 +221,7 @@ resource "aws_lambda_function" "tmfReceptionLambda" {
   kms_key_arn   = aws_kms_key.tmf_kms_key.arn
   environment {
     variables = {
-      user_number                    = var.user_number
+      user_numbers                   = var.user_numbers
       twilio_number                  = var.twilio_number
       twilio_account_sid             = var.twilio_account_sid
       twilio_auth_token              = var.twilio_auth_token 
@@ -258,7 +258,6 @@ resource "aws_lambda_function" "tmfAppLambda" {
       twilio_account_sid             = var.twilio_account_sid
       twilio_auth_token              = var.twilio_auth_token
       twilio_number                  = var.twilio_number
-      user_number                    = var.user_number
       num_songs_in_playlist          = var.num_songs_in_playlist
       songbank_cycles_before_rebuild = var.songbank_cycles_before_rebuild
       debug                          = var.debug

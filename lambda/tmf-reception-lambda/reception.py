@@ -11,7 +11,8 @@ def lambda_handler(event, _):
     if DEBUG: print("DEBUG: starting TMF reception main function")
 
     ## validate text event
-    if not validate_text_event(event):
+    source_num = validate_text_event(event)
+    if not source_num:
         return
     if DEBUG: print("DEBUG: validated text event")
 
@@ -26,7 +27,8 @@ def lambda_handler(event, _):
         response_body   = "New music update coming right away. \n"
         textHandler.send_acknowledgement_text(DEBUG, response_body + choices_captured)
 
-    ## launch app with parameters
+    ## launch app with parameters and number to txt back to
+    playlist_params["user_number"] = source_num
     try:
         if DEBUG: print("DEBUG: Launching TMF app")
         client = boto3.client("lambda")

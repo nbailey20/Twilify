@@ -8,7 +8,7 @@ variable "twilio_account_sid" {}
 variable "twilio_auth_token" {}
 variable "twilio_number" {}
 variable "twilio_number_sid" {}
-variable "user_number" {}
+variable "user_numbers" {}
 
 variable "songbank_file_name" {
   default = "songbank"
