@@ -14,7 +14,7 @@ def load_songbank(DEBUG, sp, songbank_json, params):
         "used":               [string],
         "numCycles":          int,
         "playlistId":         string,
-        "playlistListTracks": [{"name": string, "id": string, "count": int, "seeds": [string]}]
+        "playlistListTracks": [{"name": string, "id": string, "seeds": [string]}]
     }
     """
 
@@ -95,12 +95,9 @@ def load_songbank(DEBUG, sp, songbank_json, params):
 def save_songbank(DEBUG, songbank, songs_to_add, next_refresh_token):
     if DEBUG: print("DEBUG: trying to update and save songbank to S3")
 
-    ## Update neutral song refresh count for songs still in playlist
-    for song in songbank["playlistTracks"]:
-        song["count"] += 1
     ## Add new songs to playlist
     for song_data in songs_to_add:
-        songbank["playlistTracks"].append({"name": song_data["name"], "id": song_data["id"], "count": 0, "seeds": song_data["seeds"]})
+        songbank["playlistTracks"].append({"name": song_data["name"], "id": song_data["id"], "seeds": song_data["seeds"]})
 
     ## Update refresh token SSM parameter with next value
     if not tokenAuthHandler.update_refresh_token(DEBUG, next_refresh_token):

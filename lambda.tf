@@ -254,7 +254,7 @@ resource "aws_lambda_function" "tmfAppLambda" {
       songbank_file_name             = var.songbank_file_name
       spotify_user                   = var.spotify_user
       playlist_name                  = var.playlist_name
-      neutral_song_refresh_rate      = var.neutral_song_refresh_rate
+      #neutral_song_refresh_rate      = var.neutral_song_refresh_rate
       twilio_account_sid             = var.twilio_account_sid
       twilio_auth_token              = var.twilio_auth_token
       twilio_number                  = var.twilio_number

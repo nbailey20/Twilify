@@ -26,9 +26,9 @@ variable "num_songs_in_playlist" {
   default = 10
 }
 
-variable "neutral_song_refresh_rate" {
-  default = 3
-}
+#variable "neutral_song_refresh_rate" {
+#  default = 3
+#}
 
 variable "songbank_cycles_before_rebuild" {
   default = 6
