@@ -18,7 +18,7 @@ def search_for_previous_playlist(DEBUG, sp):
     #try:
         name = os.environ["playlist_name"]
         print("Playlist name: ", name)
-        res = sp.user_playlists()
+        res = sp.user_playlists(os.environ["spotify_user"])
         while res:
             print("res len: ", len(res["items"]))
             for playlist in res["items"]:
