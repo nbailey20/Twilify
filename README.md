@@ -1,15 +1,10 @@
 # Trusty Music Fabricator (TMF)
-Generate a Spotify playlist based on your current music interests by texting a Twilio-owned phone number.
+Generate a Spotify playlist based on your current musical interests or mood by texting a Twilio-owned phone number.
 Easy AWS-based serverless deployment that is completely pay-as-you-use (besides Spotify account and Twilio number, see their free trial).
 
-## Setup Instructions
-1. Create terraform.tfvars file with information needed in variables.tf - AWS account, spotify account, Twilio number, etc
-2. Run setup.sh script to build app in AWS and update Twilio phone number webhook URL
-3. Text your Trusty Music Fabricator to say hi, and enjoy :) 
-4. Terraform destroy to get rid of everything in AWS if you want to 'uninstall', don't forget to release Twilio number!
+## Current Version: 1.1.1
+Semi-automated install/deployment into AWS and integration with Twilio for easy use. Once texted, initial playlist is created with name "Trusty Music Fabricator" within seconds. Experiment with personalized playlist customization through text-based keywords, grant your friends permission to text the app themselves, investigate a hit new track and see how it was generated, but most importantly - quit trying to decide what music to listen to!
 
-## Current Version: 1.1.0
-Deployment into AWS and automatic integration with Twilio webhook is working. Initial playlist is created with name "Trusty Music Fabricator" with correct number of songs, orders of magnitude faster than previous versions. Starting to introduce playlist customization through text body. 
 
 ## Usage Instructions
 - In general, texting anything will refresh the TMF playlist
@@ -28,9 +23,31 @@ Deployment into AWS and automatic integration with Twilio webhook is working. In
 | Size [number]               | size 21                     | Add this many songs to the playlist for one iteration                                                  |
 | Keep                        | keep                        | Does not get rid of all songs automatically,  attempts to add new songs to reach desired size          |
 | Seeds [number]              | seeds 9                     | Do not update playlist, but return name of song(s) that  helped generate the 9th track in the playlist |
+| Overwrite                   | overwrite                   | (Initial text only) Use if TMF was installed previously and there is an existing playlist with correct name to overwrite instead of creating new   |
+
+
+## Deployment Instructions
+1. Provide various account information needed in terraform.tfvars file (see variables.tf file for reference) - AWS account, Spotify account, Twilio number, etc
+2. Make sure terraform is installed and that it has access with necessary permission to create resources in the AWS account
+2. Run setup.sh script to build app in AWS and update Twilio phone number webhook URL, no input required
+3. Text your Trusty Music Fabricator to say hi, and enjoy :)
+4. Yes, a better 'wizard' install is needed with descriptions for each parameter required (and entirely new authentication flow if there is any real hope of 'multiplayer')
+
+
+## Uninstall Instructions
+1. Execute "terraform destroy" to get rid of everything in AWS, delete the playlist in Spotify, and don't forget to release the Twilio number. Poof, it's all gone.
 
 
 ## Known Bugs / Issues / Needs
+- [BACKLOG] Use S3 bucket keys for KMS encryption to reduce cost 
+- [BACKLOG] Need ability to accidentally delete spotify playlist and resume without having to recreate songbank, migrate keyword
+- [BACKLOG] alert all registered numbers when fresh music is ready (can opt out via text?)
+- [BACKLOG] "classic" song ratio keyword, want to mostly enjoy new stuff or plan to get drunk and sing to what you already love? - long term favs
+- [BACKLOG] Want endless keyword so playlist keeps refreshing with new tracks as I listen without needing to text every so often, until I stop the endlessness via text
+- [BACKLOG] Add S3 bucket versioning to be able to lookup previous songbanks if desired, lifecycle policy to avoid buildup
+
+
+
 - [RESOLVED] Eliminate network resources / CFT and don't put TMF in a VPC! - Decreased cost and drastically improved speed with default Lambda Internet connectivity
 - [RESOLVED] Spotify refresh token should be saved in SSM Parameter Store as encrypted string, not in S3 with songbank
 - [RESOLVED] Network connectivity sometimes not working when app is invoked due to CloudFormation stack finishing NATGW->IGW resource and route creation immediately beforehand - added network connectivity test to check and wait a few seconds before trying again - VPCless architecture
@@ -42,9 +59,7 @@ Deployment into AWS and automatic integration with Twilio webhook is working. In
 - [RESOLVED] TMF ignores existing Spotify playlists with same name upon app setup, will create new playlist instead of choosing existing (should be variable option to overwrite)
 - [RESOLVED] Update setup script to invoke Twilio API to update phone number instead of manually copy/pasting with MFA login
 - [RESOLVED] Playlist doesn't have correct number of songs after songbank reset
-- [BACKLOG] Need ability to accidentally delete spotify playlist and resume without having to recreate songbank, migrate keyword
 - [RESOLVED] Need ability to temporarily remove cost-saving mode for faster responses for a user-texted amount of time - VPC-less architecture
-- [BACKLOG] Use S3 bucket keys for KMS encryption to reduce cost 
 - [RESOLVED] Need ability to specify that all songs are replaced via Hello text - reset keyword - changed to 'keep' as reset is default starting in v1.1
 - [RESOLVED] Happy/sad keywords to influence playlist tracks 
 - [RESOLVED] Tempo keyword to influence playlist tracks
@@ -52,12 +67,9 @@ Deployment into AWS and automatic integration with Twilio webhook is working. In
 - [RESOLVED] Energy keyword - energy high, medium, or low
 - [TESTING] Dance keyword - want danceable tracks, needs tuning
 - [RESOLVED] Size keyword to temporarily change number of songs in playlist - smaller size no longer issue as all songs reset by default, can't use with 'keep' unless desired size is larger than current playlist size
-- Want endless keyword so playlist keeps refreshing with new tracks as I listen without needing to text every so often, until I stop the endlessness via text
-- Add S3 bucket versioning to be able to lookup previous songbanks if desired, lifecycle policy to avoid buildup
 - [RESOLVED] Seeds keyword along with track number in playlist to learn which songbank songs were used to generate the playlist song - need to keep track of 'parents' in songbank
 - [RESOLVED] Overall make songbank more readable with words instead of just spotify IDs?
-- "classic" song ratio keyword, want to mostly enjoy new stuff or plan to get drunk and sing to what you already love? - long term favs
 - [RESOLVED] want single TMF deployment to work with multiple user phone numbers 
-- [BACKLOG] alert all registered numbers when fresh music is ready (can opt out via text?)
 
-- Multiplayer joint playlists??? - entirely new authentication setup required
+
+- [BACK-BACKLOG] Multiplayer joint playlists with song generation combined between friends??? - entirely new authentication setup required
