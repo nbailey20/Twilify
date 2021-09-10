@@ -8,7 +8,7 @@ variable "twilio_account_sid" {}
 variable "twilio_auth_token" {}
 variable "twilio_number" {}
 variable "twilio_number_sid" {}
-variable "user_number" {}
+variable "user_numbers" {}
 
 variable "songbank_file_name" {
   default = "songbank"
@@ -26,9 +26,9 @@ variable "num_songs_in_playlist" {
   default = 10
 }
 
-variable "neutral_song_refresh_rate" {
-  default = 3
-}
+#variable "neutral_song_refresh_rate" {
+#  default = 3
+#}
 
 variable "songbank_cycles_before_rebuild" {
   default = 6

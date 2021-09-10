@@ -12,17 +12,38 @@ def create_new_playlist(DEBUG, sp):
     except:
         if DEBUG: print("DEBUG: could not create new Spotify playlist")
         return ""
+
+
+def search_for_previous_playlist(DEBUG, sp):
+    try:
+        name = os.environ["playlist_name"]
+        res = sp.user_playlists(os.environ["spotify_user"])
+        while res:
+            for playlist in res["items"]:
+                if playlist["name"] == name:
+                    if DEBUG: print("DEBUG: found existing playlist to overwrite")
+                    return playlist["id"]
+            if res["next"]:
+                res = sp.next(res)
+            else:
+                res = None
+        if DEBUG: print("DEBUG: did not find existing playlist with appropriate name")
+        return False
+    except:
+        if DEBUG: print("DEBUG: error while searching existing user playlists, continuing")
+        return False
+
         
     
 ## Function to return current, non-expired songs in Spotify playlist and local songbank
-##  based on neutral refresh count and manual playlist deletes
+##  based on manual playlist deletes
 def load_playlist(DEBUG, sp, songbank, params):
     if DEBUG: print("DEBUG: trying to load Spotify playlist")
     playlist_id = songbank["playlistId"]
     saved_tracks = songbank["playlistTracks"]
 
-    ## If user provided reset keyword, remove all songs from playlist
-    if "reset" in params:
+    ## If keep keyword set, don't remove songs from playlist by default
+    if not "keep" in params:
         sp.user_playlist_replace_tracks(os.environ["spotify_user"], playlist_id=playlist_id, tracks=[])
 
     ## get list of current tracks in playlist
@@ -37,8 +58,7 @@ def load_playlist(DEBUG, sp, songbank, params):
     except:
         return False
   
-    ## Remove songs in saved songbank that are not longer in playlist
-    ##  or have expired based on refresh count
+    ## Remove songs in saved songbank that are no longer in playlist
     if DEBUG: print("DEBUG: about to compare and update local songbank data with actual playlist data")
     index = 0
     num_deleted = 0
@@ -52,22 +72,6 @@ def load_playlist(DEBUG, sp, songbank, params):
             index += 1
     if DEBUG: print("DEBUG: removed songs from local songbank that no longer exist in playlist")
 
-    ## if TMF invoked (neutral refresh count incremented),
-    ## remove any songs that have expired based on refresh count
-    index = 0
-    while index < len(saved_tracks):
-        st = saved_tracks[index]
-        if st["count"] >= int(os.environ["neutral_song_refresh_rate"])-1:
-            try:
-                sp.user_playlist_remove_all_occurrences_of_tracks(os.environ["spotify_user"], playlist_id, [st["id"]])
-                saved_tracks = saved_tracks[:index] + saved_tracks[index+1:]
-                if DEBUG: print("DEBUG: removed expired track from playlist and local songbank based on refresh count")
-            except:
-                if DEBUG: print("DEBUG: could not remove expired track from playlist, continuing")
-                index += 1
-        else:
-            index += 1
-
     songbank["playlistTracks"] = saved_tracks
     if DEBUG: print("DEBUG: successfully retrieved valid tracks and updated local songbank")
     return saved_tracks
@@ -78,8 +82,9 @@ def save_playlist(DEBUG, sp, playlist_id, tracks_to_add):
     if DEBUG: print("DEBUG: trying to update Spotify playlist with new tracks")
     ## If no tracks to add, we're done
     if len(tracks_to_add) > 0:
+        track_ids = [x["id"] for x in tracks_to_add]
         try:
-            sp.user_playlist_add_tracks(os.environ["spotify_user"], playlist_id, tracks_to_add)
+            sp.user_playlist_add_tracks(os.environ["spotify_user"], playlist_id, track_ids)
             if DEBUG: print("DEBUG: successfully updated playlist")
         except:
             if DEBUG: print("DEBUG: could not update playlist")

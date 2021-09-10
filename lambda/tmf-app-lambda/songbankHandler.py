@@ -7,24 +7,33 @@ import os
 ##  Takes json songbank file object and Spotify API client
 ##  initializes, creates spotify playlist if first time
 ##  Returns songbank object
-def load_songbank(DEBUG, sp, songbank_json): 
+def load_songbank(DEBUG, sp, songbank_json, params): 
     """
     {
         "new":                [string],
         "used":               [string],
         "numCycles":          int,
         "playlistId":         string,
-        "playlistListTracks": [{"id": string, "count": int}]
+        "playlistListTracks": [{"name": string, "id": string, "seeds": [string]}]
     }
     """
 
-    ## If no saved Spotify playlist ID, create one
+    
+    ## Get saved Spotify playlist ID, or try to look it up if overwrite keyword provided
     if DEBUG: print("DEBUG: looking for saved Spotify playlist ID")
     try: 
         playlist_id = songbank_json["playlistId"]
     except:
-        if DEBUG: print("DEBUG: did not find existing playlist ID, creating new playlist")
-        playlist_id = playlistHandler.create_new_playlist(DEBUG, sp)
+        if DEBUG: print("DEBUG: did not find existing playlist ID in songbank")
+
+        if "overwrite" in params:
+            if DEBUG: print("DEBUG: overwrite keyword provided, checking Spotify for pre-existing playlist with expected name in user account")
+            playlist_id = playlistHandler.search_for_previous_playlist(DEBUG, sp)
+
+            ## If no Spotify playlist ID saved or found, create one
+            if not playlist_id:
+                if DEBUG: print("DEBUG: creating new playlist to avoid overwriting anything important")
+                playlist_id = playlistHandler.create_new_playlist(DEBUG, sp)
         
     ## if songbank already exists and isn't expired, return it
     if DEBUG: print("DEBUG: checking for expired songbank")
@@ -86,12 +95,9 @@ def load_songbank(DEBUG, sp, songbank_json):
 def save_songbank(DEBUG, songbank, songs_to_add, next_refresh_token):
     if DEBUG: print("DEBUG: trying to update and save songbank to S3")
 
-    ## Update neutral song refresh count for songs still in playlist
-    for song in songbank["playlistTracks"]:
-        song["count"] += 1
     ## Add new songs to playlist
-    for song in songs_to_add:
-        songbank["playlistTracks"].append({"id": song, "count": 0})
+    for song_data in songs_to_add:
+        songbank["playlistTracks"].append({"name": song_data["name"], "id": song_data["id"], "seeds": song_data["seeds"]})
 
     ## Update refresh token SSM parameter with next value
     if not tokenAuthHandler.update_refresh_token(DEBUG, next_refresh_token):
@@ -101,3 +107,12 @@ def save_songbank(DEBUG, songbank, songs_to_add, next_refresh_token):
     if s3Handler.write_file(DEBUG, songbank):
         return True
     return False
+
+
+
+def get_seeds_for_track(DEBUG, playlistTracks, track_num):
+    if DEBUG: print("DEBUG: about to pull seed data for track ", track_num)
+    track_data = playlistTracks[track_num-1]
+    track_name = track_data["name"]
+    track_seeds = [x["name"] for x in track_data["seeds"]]
+    return track_name, track_seeds

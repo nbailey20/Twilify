@@ -6,7 +6,7 @@ def compare_event_to_valid(valid_dict, event_dict):
     for valid_property in valid_dict:
         if valid_property not in event_dict:
             return False
-        if valid_dict[valid_property] != unquote(event_dict[valid_property]):
+        if valid_dict[valid_property] != unquote(event_dict[valid_property]) and unquote(event_dict[valid_property]) not in valid_dict[valid_property]:
             return False
     return True
 
@@ -14,7 +14,7 @@ def compare_event_to_valid(valid_dict, event_dict):
 def test_valid_sms_event(event):
     valid_sms = {
         "SmsStatus": "received",
-        "From":      os.environ["user_number"],
+        "From":      os.environ["user_numbers"].split(","),
         "To":        os.environ["twilio_number"],
         "ToCountry": "US"
     }
@@ -25,5 +25,5 @@ def test_valid_sms_event(event):
 def validate_text_event(event):
     ## handle SMS events
     if "SmsSid" in event and test_valid_sms_event(event):
-        return True
+        return event["From"]
     return False

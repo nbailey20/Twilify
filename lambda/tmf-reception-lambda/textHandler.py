@@ -2,6 +2,7 @@ import re, os
 from twilio.rest import Client
 
 
+
 def parse_text(DEBUG, body):
     ## convert body to all lowercase first
     body = body.lower()
@@ -10,10 +11,10 @@ def parse_text(DEBUG, body):
     playlist_params = {}
 
     ## check to see if reset keyword included in text
-    match = re.search(r"reset", body)
+    match = re.search(r"keep", body)
     if match is not None:
-        if DEBUG: print("DEBUG: found reset keyword")
-        playlist_params["reset"] = True
+        if DEBUG: print("DEBUG: found keep keyword")
+        playlist_params["keep"] = True
 
     ## check to see if size keyword included in text
     match = re.search(r"size\+[0-9]+", body)
@@ -64,12 +65,24 @@ def parse_text(DEBUG, body):
         if DEBUG: print("DEBUG: found dance keyword")
         playlist_params["dance"] = True
 
+    ## check to see if overwrite keyword included in text
+    match = re.search(r"overwrite", body)
+    if match is not None:
+        if DEBUG: print("DEBUG: found overwrite keyword")
+        playlist_params["overwrite"] = True
+
+    ## check to see if seeds keyword included in text
+    match = re.search(r"seeds\+[0-9]+", body)
+    if match is not None:
+        if DEBUG: print("DEBUG: found seeds keyword", match.group())
+        playlist_params["seeds"] = int(match.group().split("+")[1])
+
     
     return playlist_params
 
 
 
-def send_acknowledgement_text(DEBUG, response):
+def send_acknowledgement_text(DEBUG, user_number, response):
     account_sid = os.environ["twilio_account_sid"]
     auth_token = os.environ["twilio_auth_token"]
     try:
@@ -77,7 +90,7 @@ def send_acknowledgement_text(DEBUG, response):
         client.messages.create(
             body = response,
             from_= os.environ["twilio_number"],
-            to   = os.environ["user_number"]
+            to   = user_number
         )
         if DEBUG: print("DEBUG: successfully sent acknowledgement text")
     except:
