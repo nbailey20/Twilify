@@ -21,3 +21,11 @@ resource "google_project_service_identity" "secret_manager_identity" {
     project = var.gcp_project_id
     service = "secretmanager.googleapis.com"
 }
+
+## For some reason there's no predefined role with just Storage object read/update
+resource "google_project_iam_custom_role" "tmf_storage_user_role" {
+  role_id     = "tmfStorageUserRole"
+  title       = "TMF Storage User Role"
+  description = "Allows get and update for storage objects"
+  permissions = ["storage.objects.get", "storage.objects.create", "storage.objects.delete"]
+}

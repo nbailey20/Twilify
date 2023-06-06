@@ -22,8 +22,8 @@ def test_valid_sms_event(event):
     return compare_event_to_valid(valid_sms, event)
 
 
-def validate_text_event(event):
+def validate_request(request):
     ## handle SMS events
-    if "SmsSid" in event and test_valid_sms_event(event):
-        return event["From"]
+    if "SmsSid" in request and test_valid_sms_event(request):
+        return request["From"]
     return False

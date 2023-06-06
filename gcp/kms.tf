@@ -26,6 +26,7 @@ resource "google_kms_crypto_key_iam_binding" "tmf_kms_binding" {
         "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}",
         "serviceAccount:${google_project_service_identity.secret_manager_identity.email}",
         "serviceAccount:service-${data.google_project.project.number}@gcp-sa-artifactregistry.iam.gserviceaccount.com",
-        "serviceAccount:service-${data.google_project.project.number}@gcf-admin-robot.iam.gserviceaccount.com"
+        "serviceAccount:service-${data.google_project.project.number}@gcf-admin-robot.iam.gserviceaccount.com",
+        "serviceAccount:service-${data.google_project.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
     ]
 }

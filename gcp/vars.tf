@@ -3,11 +3,10 @@ variable "gcp_region" {}
 variable "spotify_user" {}
 variable "spotify_client_id" {}
 variable "spotify_client_secret" {}
-variable "refresh_token" {}
+variable "spotify_refresh_token" {}
 variable "twilio_account_sid" {}
 variable "twilio_auth_token" {}
 variable "twilio_number" {}
-variable "twilio_number_sid" {}
 variable "user_numbers" {}
 
 variable "songbank_file_name" {

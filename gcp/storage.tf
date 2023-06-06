@@ -26,3 +26,17 @@ resource "google_storage_bucket_object" "tmf_app_object" {
     bucket = google_storage_bucket.tmf_storage.name
     source = "./functions/tmf-app/tmf-app-function.zip"
 }
+
+## Create empty songbank object
+resource "google_storage_bucket_object" "tmf_songbank" {
+  name    = var.songbank_file_name
+  content = jsonencode({})
+  bucket  = google_storage_bucket.tmf_storage.name
+}
+
+
+resource "google_storage_bucket_iam_binding" "tmf_storage_binding" {
+  bucket  = google_storage_bucket.tmf_storage.name
+  role    = google_project_iam_custom_role.tmf_storage_user_role.id
+  members = [google_service_account.tmf_app_sa.member]
+}

@@ -1,15 +1,21 @@
 ## Main application flow
 
-import os, json
-import musicQueryHandler, playlistHandler, twilioHandler, s3Handler, songbankHandler, tokenAuthHandler
+import os, base64, json
+import musicQueryHandler, playlistHandler, twilioHandler, storageHandler, songbankHandler, tokenAuthHandler
 
 ## Terraform bools not capitalized unlike Python
 DEBUG = True if os.environ["debug"] == "true" else False
 
 
 ############################################################# START MAIN CODE BLOCK ##########################################################
-def main(request):
-    if DEBUG: print("DEBUG: starting lambda_handler beginning function", event)
+def main(event_data, _):
+    if DEBUG: print("DEBUG: starting tmf app function")
+
+    ## PubSub message has b64-encoded 'data' field of bytes
+    ## Decode b64, convert to UTF-8 string, and create Python dict
+    event = json.loads(base64.b64decode(event_data["data"]).decode("utf-8"))
+    if DEBUG: print(f"DEBUG: event {event}")
+
     params = event
     user_number = params["user_number"]
 
@@ -18,25 +24,25 @@ def main(request):
         params["keep"] = True
 
     ## Make sure internet connectivity is working
-    if not s3Handler.test_network_connectivity(DEBUG):
+    if not storageHandler.test_network_connectivity(DEBUG):
         if DEBUG: print("DEBUG: no network connectivity, about to send error text")
         twilioHandler.send_error_message(user_number, "TMF has no Internet connectivity, aborting.")
         return
 
     ## Load songbank file
-    songbank_json = s3Handler.read_file(DEBUG)
+    songbank_json = storageHandler.read_file(DEBUG)
     ## Check explicitly for False since empty JSON is also not True
     if songbank_json is False:
-        if DEBUG: print("DEBUG: could not retrieve songbank json from S3, about to send error text")
-        twilioHandler.send_error_message(user_number, "Could not read songbank file from S3, aborting.")
+        if DEBUG: print("DEBUG: could not retrieve songbank json from Storage, about to send error text")
+        twilioHandler.send_error_message(user_number, "Could not read songbank file from Cloud Storage, aborting.")
         return
 
 
     ## Retrieve and decrypt refresh token data from SSM Parameter Store
-    current_refresh_token = tokenAuthHandler.retrieve_refresh_token(DEBUG)
+    current_refresh_token = os.environ["spotify_refresh_token"]
     if not current_refresh_token:
         if DEBUG: print("DEBUG: could not retrieve saved Spotify refresh token, about to send error text")
-        twilioHandler.send_error_message(user_number, "Could not retrieve Spotify refresh token from Parameter Store")
+        twilioHandler.send_error_message(user_number, "Did not find expected env variable Spotify refresh token")
         return
 
 
@@ -76,10 +82,7 @@ def main(request):
         ## All done!
         if DEBUG: print("DEBUG: seed info gathered, texting user song gen info")
         twilioHandler.send_completed_message(user_number, "Seeds of '" + track + "': " + ", ".join(seeds))
-        return {
-        "status": "200",
-        "body": "success"
-        }
+        return
 
 
     ## IF not, get appropriate number of song recommendations
@@ -95,8 +98,8 @@ def main(request):
     ## Add new songs to songbank and write data to S3 for next time
     ## Save Spotify refresh token for next invocation
     if not songbankHandler.save_songbank(DEBUG, songbank, songs_to_add, next_refresh_token):
-        if DEBUG: print("DEBUG: could not save songbank to s3, about to send error text")
-        twilioHandler.send_error_message(user_number, "Could not save songbank to S3")
+        if DEBUG: print("DEBUG: could not save songbank to storage, about to send error text")
+        twilioHandler.send_error_message(user_number, "Could not save songbank to Cloud Storage")
         return
 
 
@@ -120,7 +123,4 @@ def main(request):
     else:
         if DEBUG: print("DEBUG: successfully completed TMF iteration, about to send success text")
         twilioHandler.send_completed_message(user_number, "Enjoy your new " + str(num_songs_to_add) + " songs :)")
-    return {
-        "status": "200",
-        "body": "success"
-    }
+    return
