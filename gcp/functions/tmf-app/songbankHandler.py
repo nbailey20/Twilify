@@ -94,7 +94,7 @@ def load_songbank(DEBUG, sp, songbank_json, params):
 ##  Writes songbank to S3 bucket to save state for next time
 ##  adds recently recommended songs to playlistTracks
 ##  updates Spotify refresh token for next invocation
-def save_songbank(DEBUG, songbank, songs_to_add, next_refresh_token):
+def save_songbank(DEBUG, songbank, songs_to_add):
     if DEBUG: print("DEBUG: trying to update and save songbank to S3")
 
     ## Add new songs to playlist
@@ -102,8 +102,8 @@ def save_songbank(DEBUG, songbank, songs_to_add, next_refresh_token):
         songbank["playlistTracks"].append({"name": song_data["name"], "id": song_data["id"], "seeds": song_data["seeds"]})
 
     ## Update refresh token SSM parameter with next value
-    if not tokenAuthHandler.update_refresh_token(DEBUG, next_refresh_token):
-        return False
+    #if not tokenAuthHandler.update_refresh_token(DEBUG, next_refresh_token):
+    #    return False
 
     ## Save songbank to S3 for next invocation
     if storageHandler.write_file(DEBUG, songbank):

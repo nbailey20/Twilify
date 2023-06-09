@@ -7,7 +7,7 @@ def parse_text(DEBUG, body):
     ## convert body to all lowercase first
     body = body.lower()
 
-    if DEBUG: print("DEBUG: received message " + str(body))
+    if DEBUG: print("DEBUG: received message " + body)
     playlist_params = {}
 
     ## check to see if reset keyword included in text
@@ -17,10 +17,10 @@ def parse_text(DEBUG, body):
         playlist_params["keep"] = True
 
     ## check to see if size keyword included in text
-    match = re.search(r"size\+[0-9]+", body)
+    match = re.search(r"size\s+([0-9]+)", body)
     if match is not None:
-        if DEBUG: print("DEBUG: found size keyword", match.group())
-        playlist_params["size"] = int(match.group().split("+")[1])
+        if DEBUG: print("DEBUG: found size keyword:", match.group())
+        playlist_params["size"] = int(match.group(1))
 
     ## check to see if happy keyword included in text
     match = re.search(r"happy", body)
@@ -35,10 +35,10 @@ def parse_text(DEBUG, body):
         playlist_params["sad"] = True
     
     ## check to see if tempo keyword included in text
-    match = re.search(r"tempo\+[0-9]+", body)
+    match = re.search(r"tempo\s+([0-9]+)", body)
     if match is not None:
-        if DEBUG: print("DEBUG: found tempo keyword", match.group())
-        playlist_params["tempo"] = int(match.group().split("+")[1])
+        if DEBUG: print("DEBUG: found tempo keyword:", match.group())
+        playlist_params["tempo"] = int(match.group(1))
     
     ## check to see if instrumental keyword included in text
     match = re.search(r"instrumental", body)
@@ -47,10 +47,10 @@ def parse_text(DEBUG, body):
         playlist_params["instrumental"] = True
     
     ## check to see if size keyword included in text
-    match = re.search(r"energy\+\w+", body)
+    match = re.search(r"energy\s+(\w+)", body)
     if match is not None:
-        if DEBUG: print("DEBUG: found energy keyword", match.group())
-        energy_type = match.group().split("+")[1]
+        if DEBUG: print("DEBUG: found energy keyword:", match.group())
+        energy_type = match.group(1)
         if energy_type == "low":
             playlist_params["energy"] = "low"
         elif energy_type == "medium":
@@ -72,12 +72,11 @@ def parse_text(DEBUG, body):
         playlist_params["overwrite"] = True
 
     ## check to see if seeds keyword included in text
-    match = re.search(r"seeds\+[0-9]+", body)
+    match = re.search(r"seeds\s+([0-9]+)", body)
     if match is not None:
-        if DEBUG: print("DEBUG: found seeds keyword", match.group())
-        playlist_params["seeds"] = int(match.group().split("+")[1])
+        if DEBUG: print("DEBUG: found seeds keyword:", match.group())
+        playlist_params["seeds"] = int(match.group(1))
 
-    
     return playlist_params
 
 

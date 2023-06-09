@@ -15,20 +15,20 @@ def retrieve_refresh_token(DEBUG):
     return token
 
 
-def update_refresh_token(DEBUG, next_refresh_token):
-    if DEBUG: print("DEBUG: about to save updated refresh token to secret manager as b64 encoded string")
-    spotify_token_id = os.environ["spotify_refresh_token_id"]
-    if DEBUG: print(f"DEBUG: refresh token id {spotify_token_id}")
-    client = secretmanager_v1.SecretManagerServiceClient()
-    request = secretmanager_v1.AddSecretVersionRequest(
-        parent=spotify_token_id,
-        payload=secretmanager_v1.types.SecretPayload(
-            data=base64.b64encode(next_refresh_token.encode())
-        ) 
-    )
-    response = client.add_secret_version(request=request)
-    if DEBUG: print(f"DEBUG: secret manager response {response}")
-    return True
+# def update_refresh_token(DEBUG, next_refresh_token):
+#     if DEBUG: print("DEBUG: about to save updated refresh token to secret manager as b64 encoded string")
+#     spotify_token_id = os.environ["spotify_refresh_token_id"]
+#     if DEBUG: print(f"DEBUG: refresh token id {spotify_token_id}")
+#     client = secretmanager_v1.SecretManagerServiceClient()
+#     request = secretmanager_v1.AddSecretVersionRequest(
+#         parent=spotify_token_id,
+#         payload=secretmanager_v1.types.SecretPayload(
+#             data=base64.b64encode(next_refresh_token.encode())
+#         ) 
+#     )
+#     response = client.add_secret_version(request=request)
+#     if DEBUG: print(f"DEBUG: secret manager response {response}")
+#     return True
     
     # try:
         
@@ -58,23 +58,21 @@ def auth_spotify(DEBUG, refresh_token):
     except:
         if DEBUG: print("DEBUG: could not create Spotify oauth client object")
 
-    ret_list = [False,False] ## API client, next_refresh_token
-    if DEBUG: print("DEBUG: about to get new access token with refresh token")
+    if DEBUG: print("DEBUG: about to get new access token from refresh token")
     try:
         token_info = sp_oauth.refresh_access_token(refresh_token)
         access_token = token_info["access_token"]
-        ret_list[1] = token_info["refresh_token"]
         if DEBUG: print("DEBUG: got new access token object")
     except:
-        if DEBUG: print("DEBUG: could not get access token or next refresh, returning False")
-        return ret_list
+        if DEBUG: print("DEBUG: could not get access token, returning False")
+        return False
 
     if DEBUG: print("DEBUG: about to create spotipy client")
     try:
         ## client by default has request timeout of 5 seconds, 3 retries per API call
-        ret_list[0] = Spotify(auth=access_token)
+        sp = Spotify(auth=access_token)
         if DEBUG: print("DEBUG: successfully returning spotipy API client back to main")
     except:
         if DEBUG: print("DEBUG: could not create spotipy client with access token")
-        return ret_list
-    return ret_list
+        return False
+    return sp
