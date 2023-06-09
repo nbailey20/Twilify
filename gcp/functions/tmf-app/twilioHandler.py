@@ -1,5 +1,4 @@
 ## Handles Twilio success / error message operations
-
 import os
 from urllib.parse import unquote
 
@@ -23,7 +22,6 @@ def send_error_message(user_number, message):
 
 
 def send_completed_message(user_number, message):
-    print("User num", user_number)
     account_sid = os.environ["twilio_account_sid"]
     auth_token = os.environ["twilio_auth_token"]
     try:
@@ -33,7 +31,7 @@ def send_completed_message(user_number, message):
             from_=os.environ["twilio_number"],
             to=unquote(user_number)
         )
+        print(f"Successfully send completion text to {user_number}")
     except:
         print("ERROR: failed to send success text")
     return
-

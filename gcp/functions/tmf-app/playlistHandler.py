@@ -1,5 +1,4 @@
 ## Handles Spotify playlist operations: create, save, load
-
 import os
 
 
@@ -9,9 +8,9 @@ def create_new_playlist(DEBUG, sp):
         playlist_id = res["id"]
         if DEBUG: print("DEBUG: successfully created playlist")
         return playlist_id
-    except:
-        if DEBUG: print("DEBUG: could not create new Spotify playlist")
-        return ""
+    except Exception as e:
+        if DEBUG: print(f"DEBUG: could not create new Spotify playlist: {e}")
+        return
 
 
 def search_for_previous_playlist(DEBUG, sp):
@@ -29,12 +28,12 @@ def search_for_previous_playlist(DEBUG, sp):
                 res = None
         if DEBUG: print("DEBUG: did not find existing playlist with appropriate name")
         return False
-    except:
-        if DEBUG: print("DEBUG: error while searching existing user playlists, continuing")
+    except Exception as e:
+        if DEBUG: print(f"DEBUG: error while searching existing user playlists, continuing: {e}")
         return False
 
-        
-    
+
+
 ## Function to return current, non-expired songs in Spotify playlist and local songbank
 ##  based on manual playlist deletes
 def load_playlist(DEBUG, sp, songbank, params):
@@ -44,7 +43,11 @@ def load_playlist(DEBUG, sp, songbank, params):
 
     ## If keep keyword set, don't remove songs from playlist by default
     if not "keep" in params:
-        sp.user_playlist_replace_tracks(os.environ["spotify_user"], playlist_id=playlist_id, tracks=[])
+        if DEBUG: print("DEBUG: keep keyword not provided, about to replace all tracks in playlist")
+        try:
+            sp.user_playlist_replace_tracks(os.environ["spotify_user"], playlist_id=playlist_id, tracks=[])
+        except Exception as e:
+            if DEBUG: print(f"DEBUG: failed to replace all tracks: {e}")
 
     ## get list of current tracks in playlist
     if DEBUG: print("DEBUG: about to retrieve current tracks in playlist")
@@ -55,7 +58,8 @@ def load_playlist(DEBUG, sp, songbank, params):
         for track in res:
             currentTracks.append(track["track"]["id"])
         if DEBUG: print("DEBUG: successfully retrieved playlist tracks")
-    except:
+    except Exception as e:
+        if DEBUG: print(f"DEBUG: failed to retrieve playlist tracks: {e}")
         return False
   
     ## Remove songs in saved songbank that are no longer in playlist
@@ -79,15 +83,14 @@ def load_playlist(DEBUG, sp, songbank, params):
 
 
 def save_playlist(DEBUG, sp, playlist_id, tracks_to_add):
-    if DEBUG: print("DEBUG: trying to update Spotify playlist with new tracks")
+    if DEBUG: print("DEBUG: about to update Spotify playlist with new tracks")
     ## If no tracks to add, we're done
     if len(tracks_to_add) > 0:
         track_ids = [x["id"] for x in tracks_to_add]
         try:
             sp.user_playlist_add_tracks(os.environ["spotify_user"], playlist_id, track_ids)
             if DEBUG: print("DEBUG: successfully updated playlist")
-        except:
-            if DEBUG: print("DEBUG: could not update playlist")
+        except Exception as e:
+            if DEBUG: print(f"DEBUG: could not update playlist: {e}")
             return False
     return True
-

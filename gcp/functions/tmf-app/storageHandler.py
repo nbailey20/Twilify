@@ -23,51 +23,37 @@ def test_network_connectivity(DEBUG):
 ## Taken from google docs, returns True if upload successful, else False
 def write_file(DEBUG, data):
     if DEBUG: print("DEBUG: about to save local songbank to Cloud Storage")
-    client = storage.Client()
-    bucket = client.bucket(os.environ["bucket_name"])
-    blob = bucket.blob(os.environ["songbank_file_name"])
-    blob.upload_from_string(json.dumps(data))
-    if DEBUG: print("DEBUG: successfully saved songbank to S3")
-    return True
-
-    
-    # try:
-        
-    #     return True
-    # except:
-    #     if DEBUG: print("DEBUG: did not successfully write file to S3")
-    #     return False
-    # return
+    try:
+        client = storage.Client()
+        bucket = client.bucket(os.environ["bucket_name"])
+        blob = bucket.blob(os.environ["songbank_file_name"])
+        blob.upload_from_string(json.dumps(data))
+        if DEBUG: print("DEBUG: successfully saved songbank to S3")
+        return True
+    except Exception as e:
+        if DEBUG: print(f"DEBUG: error writing file to storage bucket: {e}")
+        return False
 
 
-## Returns file contents if successful, False otherwise
+
+## Returns file contents as dict if successful, False otherwise
 def read_file(DEBUG):
     ## Read object from Storage after checking network connection
     if DEBUG: print("DEBUG: about to retrieve songbank object from Cloud Storage")
-    client = storage.Client()
-    bucket = client.bucket(os.environ["bucket_name"])
-    blob = bucket.blob(os.environ["songbank_file_name"])
-    file_data = blob.download_as_text()
-    if DEBUG: print("DEBUG: successfully retrieved songbank object from Storage")
-    print(file_data)
+    try:
+        client = storage.Client()
+        bucket = client.bucket(os.environ["bucket_name"])
+        blob = bucket.blob(os.environ["songbank_file_name"])
+        file_data = blob.download_as_text()
+        if DEBUG: print("DEBUG: successfully retrieved songbank object from Storage")
+    except Exception as e:
+        if DEBUG: print(f"DEBUG: failed to read songbank file from storage: {e}")
+        return False
 
-    json_content = json.loads(file_data)
-    if DEBUG: print("DEBUG: successfully parsed songbank")
-    return json_content
-
-    # try:
-        
-    # except:
-    #     if DEBUG: print("DEBUG: could not retrieve songbank from S3")
-    #     return False
-
-    ## Parse songbank file into json object
-    # if DEBUG: print("DEBUG: about to try and parse songbank file")
-    # try:
-    #     file_content = res['Body'].read().decode('utf-8')
-    #     json_content = json.loads(file_content)
-    #     if DEBUG: print("DEBUG: successfully parsed songbank")
-    # except:
-    #     if DEBUG: print("DEBUG: could not parse songbank from file")
-    #     return False
-    # return json_content
+    try:
+        json_content = json.loads(file_data)
+        if DEBUG: print("DEBUG: successfully parsed songbank")
+        return json_content
+    except Exception as e:
+        if DEBUG: print("DEBUG: could not parse songbank from file")
+        return False

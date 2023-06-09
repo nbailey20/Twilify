@@ -13,8 +13,12 @@ def main(event_data, _):
 
     ## PubSub message has b64-encoded 'data' field of bytes
     ## Decode b64, convert to UTF-8 string, and create Python dict
-    event = json.loads(base64.b64decode(event_data["data"]).decode("utf-8"))
-    if DEBUG: print(f"DEBUG: event {event}")
+    try:
+        event = json.loads(base64.b64decode(event_data["data"]).decode("utf-8"))
+        if DEBUG: print(f"DEBUG: event {event}")
+    except Exception as e:
+        if DEBUG: print(f"DEBUG: error reading pubsub input: {e}")
+        return
 
     params = event
     user_number = params["user_number"]
@@ -39,7 +43,7 @@ def main(event_data, _):
 
 
     ## Retrieve and decrypt refresh token data
-    refresh_token = tokenAuthHandler.retrieve_refresh_token(DEBUG)
+    refresh_token = os.environ["spotify_refresh_token"]
     if not refresh_token:
         if DEBUG: print("DEBUG: could not retrieve saved Spotify refresh token, about to send error text")
         twilioHandler.send_error_message(user_number, "Did not find expected env variable Spotify refresh token")
@@ -72,7 +76,7 @@ def main(event_data, _):
         return
 
 
-    ## Check if user wants new music or just song seed info
+    ## Check if user just wants song seed info
     if "seeds" in params:
         track, seeds = songbankHandler.get_seeds_for_track(DEBUG, playlistTracks, params["seeds"])
         ## All done!
@@ -81,7 +85,7 @@ def main(event_data, _):
         return
 
 
-    ## IF not, get appropriate number of song recommendations
+    ## If user wants music, get appropriate number of song recommendations
     num_songs_to_add = int(os.environ["num_songs_in_playlist"]) - len(playlistTracks)
     if "size" in params:
         num_songs_to_add = int(params["size"]) - len(playlistTracks) 
@@ -101,7 +105,7 @@ def main(event_data, _):
 
     ## Add recommended songs to Spotify playlist
     if not playlistHandler.save_playlist(DEBUG, sp, songbank["playlistId"], songs_to_add):
-        if DEBUG: print("DEBUG: could not save Spotify playlist, about to send error text")
+        if DEBUG: print("DEBUG: could not save Spotify playlist for user, about to send error text")
         twilioHandler.send_error_message(user_number, "Updated songbank with new content but could not push to playlist")
         return
 
@@ -115,7 +119,7 @@ def main(event_data, _):
         twilioHandler.send_completed_message(user_number, "Sorry, but I can't deliver the expected smaller size while keeping all current songs! Please try again.")
     elif num_songs_to_add != len(songs_to_add):
         if DEBUG: print("DEBUG: fairly successfully completed TMF iteration, about to send success text")
-        twilioHandler.send_completed_message(user_number, "Here are " + str(len(songs_to_add)) + "/" + str(num_songs_to_add) + " songs, the desired number could not be found")
+        twilioHandler.send_completed_message(user_number, "Here are " + str(len(songs_to_add)) + "/" + str(num_songs_to_add) + " songs, the desired number could not be generated within the allotted attempts")
     else:
         if DEBUG: print("DEBUG: successfully completed TMF iteration, about to send success text")
         twilioHandler.send_completed_message(user_number, "Enjoy your new " + str(num_songs_to_add) + " songs :)")

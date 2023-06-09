@@ -18,7 +18,6 @@ def load_songbank(DEBUG, sp, songbank_json, params):
     }
     """
 
-    
     ## Get saved Spotify playlist ID, or try to look it up if overwrite keyword provided
     if DEBUG: print("DEBUG: looking for saved Spotify playlist ID")
     try: 
@@ -32,11 +31,13 @@ def load_songbank(DEBUG, sp, songbank_json, params):
             if DEBUG: print("DEBUG: overwrite keyword provided, checking Spotify for pre-existing playlist with expected name in user account")
             playlist_id = playlistHandler.search_for_previous_playlist(DEBUG, sp)
 
-        ## If no Spotify playlist ID saved or found, create one
+        ## If no Spotify playlist ID saved or found, try to create one
         if not playlist_id:
             if DEBUG: print("DEBUG: creating new playlist to avoid overwriting anything important")
             playlist_id = playlistHandler.create_new_playlist(DEBUG, sp)
-        
+            if not playlist_id:
+                return False
+
     ## if songbank already exists and isn't expired, return it
     if DEBUG: print("DEBUG: checking for expired songbank")
     expired = None
@@ -63,7 +64,7 @@ def load_songbank(DEBUG, sp, songbank_json, params):
                 "playlistTracks": [], 
             }
         else:
-            if DEBUG: print("DEBUG: could not create new songbank data")
+            if DEBUG: print("DEBUG: could not lookup favorite songs to create new songbank data")
             return False
 
     ## if songbank expired, then get new seeds and keep track of current playlist
@@ -79,15 +80,14 @@ def load_songbank(DEBUG, sp, songbank_json, params):
                 "playlistTracks": songbank_json["playlistTracks"], 
             }
         else:
-            if DEBUG: print("DEBUG: could not rebuild songbank data")
+            if DEBUG: print("DEBUG: could not lookup favorite tracks to rebuild songbank data")
             return False
 
     else:
         ## make sure up-to-date Spotify playlist ID in songbank
-        songbank_json["playlistID"] = playlist_id
         if DEBUG: print("DEBUG: retrieving previous songbank data")
+        songbank_json["playlistID"] = playlist_id
         return songbank_json
-
 
 
 
@@ -100,10 +100,6 @@ def save_songbank(DEBUG, songbank, songs_to_add):
     ## Add new songs to playlist
     for song_data in songs_to_add:
         songbank["playlistTracks"].append({"name": song_data["name"], "id": song_data["id"], "seeds": song_data["seeds"]})
-
-    ## Update refresh token SSM parameter with next value
-    #if not tokenAuthHandler.update_refresh_token(DEBUG, next_refresh_token):
-    #    return False
 
     ## Save songbank to S3 for next invocation
     if storageHandler.write_file(DEBUG, songbank):

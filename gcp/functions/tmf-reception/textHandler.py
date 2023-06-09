@@ -4,6 +4,9 @@ from twilio.rest import Client
 
 
 def parse_text(DEBUG, body):
+    if type(body) != str:
+        return {}
+
     ## convert body to all lowercase first
     body = body.lower()
 

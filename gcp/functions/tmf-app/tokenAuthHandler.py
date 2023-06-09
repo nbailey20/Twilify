@@ -8,38 +8,6 @@ from spotipy import Spotify
 from spotipy.oauth2 import SpotifyOAuth
 
 
-def retrieve_refresh_token(DEBUG):
-    if DEBUG: print("DEBUG: about to retrieve Spotify refresh token as env var")
-    token = os.environ["spotify_refresh_token"]
-    if DEBUG: print(f"DEBUG: retrieved token {token}")
-    return token
-
-
-# def update_refresh_token(DEBUG, next_refresh_token):
-#     if DEBUG: print("DEBUG: about to save updated refresh token to secret manager as b64 encoded string")
-#     spotify_token_id = os.environ["spotify_refresh_token_id"]
-#     if DEBUG: print(f"DEBUG: refresh token id {spotify_token_id}")
-#     client = secretmanager_v1.SecretManagerServiceClient()
-#     request = secretmanager_v1.AddSecretVersionRequest(
-#         parent=spotify_token_id,
-#         payload=secretmanager_v1.types.SecretPayload(
-#             data=base64.b64encode(next_refresh_token.encode())
-#         ) 
-#     )
-#     response = client.add_secret_version(request=request)
-#     if DEBUG: print(f"DEBUG: secret manager response {response}")
-#     return True
-    
-    # try:
-        
-    #     if DEBUG: print("DEBUG: successfully saved refresh token to parameter store")
-    #     return True
-    # except:
-    #     if DEBUG: print("DEBUG: did not successfully update refresh token parameter")
-    #     return False
-
-
-
 ## Function to return an API client and refresh token given Spotify Oauth creds
 ## [False, False] -> [sp, refresh_token] if successful
 def auth_spotify(DEBUG, refresh_token):
