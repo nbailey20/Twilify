@@ -1,39 +1,39 @@
-resource "aws_api_gateway_rest_api" "tmfApi" {
-  name        = "tmf-api"
-  description = "API to accept Twilio SMS webhook POST requests for TMF" 
+resource "aws_api_gateway_rest_api" "twilifyApi" {
+  name        = "twilify-api"
+  description = "API to accept SMS webhook POST requests from Twilio when text occurs" 
 }
 
 
-resource "aws_lambda_permission" "tmfReceptionLambdaApiGwPermission" {
+resource "aws_lambda_permission" "twilifyReceptionLambdaApiGwPermission" {
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.tmfReceptionLambda.function_name
+  function_name = aws_lambda_function.twilifyReceptionLambda.function_name
   principal     = "apigateway.amazonaws.com"
 
   # The /*/*/* part allows invocation from any stage, method and resource path
   # within API Gateway REST API.
-  source_arn = "${aws_api_gateway_rest_api.tmfApi.execution_arn}/*/POST/tmf"
+  source_arn = "${aws_api_gateway_rest_api.twilifyApi.execution_arn}/*/POST/twilify"
 }
 
-resource "aws_api_gateway_resource" "tmfApiResource" {
-  rest_api_id = aws_api_gateway_rest_api.tmfApi.id
-  parent_id   = aws_api_gateway_rest_api.tmfApi.root_resource_id
-  path_part   = "tmf"
+resource "aws_api_gateway_resource" "twilifyApiResource" {
+  rest_api_id = aws_api_gateway_rest_api.twilifyApi.id
+  parent_id   = aws_api_gateway_rest_api.twilifyApi.root_resource_id
+  path_part   = "twilify"
 }
 
-resource "aws_api_gateway_method" "tmfApiMethod" {
-  rest_api_id   = aws_api_gateway_rest_api.tmfApi.id
-  resource_id   = aws_api_gateway_resource.tmfApiResource.id
+resource "aws_api_gateway_method" "twilifyApiMethod" {
+  rest_api_id   = aws_api_gateway_rest_api.twilifyApi.id
+  resource_id   = aws_api_gateway_resource.twilifyApiResource.id
   http_method   = "POST"
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_integration" "tmfApiIntegration" {
-  rest_api_id             = aws_api_gateway_rest_api.tmfApi.id
-  resource_id             = aws_api_gateway_resource.tmfApiResource.id
-  http_method             = aws_api_gateway_method.tmfApiMethod.http_method
-  integration_http_method = aws_api_gateway_method.tmfApiMethod.http_method
+resource "aws_api_gateway_integration" "twilifyApiIntegration" {
+  rest_api_id             = aws_api_gateway_rest_api.twilifyApi.id
+  resource_id             = aws_api_gateway_resource.twilifyApiResource.id
+  http_method             = aws_api_gateway_method.twilifyApiMethod.http_method
+  integration_http_method = aws_api_gateway_method.twilifyApiMethod.http_method
   type                    = "AWS"
-  uri                     = aws_lambda_function.tmfReceptionLambda.invoke_arn
+  uri                     = aws_lambda_function.twilifyReceptionLambda.invoke_arn
 
   # Transforms the incoming URL-encoded request to JSON
   request_templates = {
@@ -54,10 +54,10 @@ EOF
 }
 
 
-resource "aws_api_gateway_method_response" "tmfSuccessMethodResponse" {
-  rest_api_id     = aws_api_gateway_rest_api.tmfApi.id
-  resource_id     = aws_api_gateway_resource.tmfApiResource.id
-  http_method     = aws_api_gateway_method.tmfApiMethod.http_method
+resource "aws_api_gateway_method_response" "twilifySuccessMethodResponse" {
+  rest_api_id     = aws_api_gateway_rest_api.twilifyApi.id
+  resource_id     = aws_api_gateway_resource.twilifyApiResource.id
+  http_method     = aws_api_gateway_method.twilifyApiMethod.http_method
   response_models =  {
     "application/xml": "Empty"
   }
@@ -66,12 +66,12 @@ resource "aws_api_gateway_method_response" "tmfSuccessMethodResponse" {
 
 
 
-resource "aws_api_gateway_integration_response" "tmfSuccessIntegrationResponse" {
-  depends_on  = [aws_api_gateway_integration.tmfApiIntegration]
-  rest_api_id = aws_api_gateway_rest_api.tmfApi.id
-  resource_id = aws_api_gateway_resource.tmfApiResource.id
-  http_method = aws_api_gateway_method.tmfApiMethod.http_method
-  status_code = aws_api_gateway_method_response.tmfSuccessMethodResponse.status_code
+resource "aws_api_gateway_integration_response" "twilifySuccessIntegrationResponse" {
+  depends_on  = [aws_api_gateway_integration.twilifyApiIntegration]
+  rest_api_id = aws_api_gateway_rest_api.twilifyApi.id
+  resource_id = aws_api_gateway_resource.twilifyApiResource.id
+  http_method = aws_api_gateway_method.twilifyApiMethod.http_method
+  status_code = aws_api_gateway_method_response.twilifySuccessMethodResponse.status_code
 
   # Transforms the backend JSON response to XML
   response_templates = {
@@ -82,8 +82,8 @@ EOF
 }
 
 
-resource "aws_api_gateway_deployment" "tmfApiDeployment" {
-  rest_api_id = aws_api_gateway_rest_api.tmfApi.id
+resource "aws_api_gateway_deployment" "twilifyApiDeployment" {
+  rest_api_id = aws_api_gateway_rest_api.twilifyApi.id
 
   triggers = {
     # NOTE: The configuration below will satisfy ordering considerations,
@@ -94,11 +94,11 @@ resource "aws_api_gateway_deployment" "tmfApiDeployment" {
     #       resources will show a difference after the initial implementation.
     #       It will stabilize to only change when resources change afterwards.
     redeployment = sha1(jsonencode([
-      aws_api_gateway_resource.tmfApiResource,
-      aws_api_gateway_method.tmfApiMethod,
-      aws_api_gateway_integration.tmfApiIntegration,
-      aws_api_gateway_method_response.tmfSuccessMethodResponse,
-      aws_api_gateway_integration_response.tmfSuccessIntegrationResponse
+      aws_api_gateway_resource.twilifyApiResource,
+      aws_api_gateway_method.twilifyApiMethod,
+      aws_api_gateway_integration.twilifyApiIntegration,
+      aws_api_gateway_method_response.twilifySuccessMethodResponse,
+      aws_api_gateway_integration_response.twilifySuccessIntegrationResponse
     ]))
   }
 
@@ -107,8 +107,8 @@ resource "aws_api_gateway_deployment" "tmfApiDeployment" {
   }
 }
 
-resource "aws_api_gateway_stage" "tmfApiStage" {
-  deployment_id = aws_api_gateway_deployment.tmfApiDeployment.id
-  rest_api_id   = aws_api_gateway_rest_api.tmfApi.id
+resource "aws_api_gateway_stage" "twilifyApiStage" {
+  deployment_id = aws_api_gateway_deployment.twilifyApiDeployment.id
+  rest_api_id   = aws_api_gateway_rest_api.twilifyApi.id
   stage_name    = "dev"
 }

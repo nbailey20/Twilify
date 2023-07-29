@@ -1,13 +1,13 @@
 resource "aws_s3_bucket" "songbankBucket" {
   acl = "private"
-  bucket_prefix = "tmf-songbank-"
+  bucket_prefix = "twilify-songbank-"
   tags = {
-    Name = "TMF Songbank Bucket"
+    Name = "Twilify Songbank Bucket"
   }
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        kms_master_key_id = aws_kms_key.tmf_kms_key.arn
+        kms_master_key_id = aws_kms_key.twilify_kms_key.arn
         sse_algorithm     = "aws:kms"
       }
     }
@@ -24,14 +24,14 @@ resource "aws_s3_bucket_public_access_block" "songbankBucketAccessBlock" {
 
 resource "aws_s3_bucket" "setupBucket" {
   acl = "private"
-  bucket_prefix = "tmf-setup-"
+  bucket_prefix = "twilify-setup-"
   tags = {
-    Name = "TMF Setup Bucket"
+    Name = "Twilify Setup Bucket"
   }
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
-        kms_master_key_id = aws_kms_key.tmf_kms_key.arn
+        kms_master_key_id = aws_kms_key.twilify_kms_key.arn
         sse_algorithm     = "aws:kms"
       }
     }
@@ -47,19 +47,19 @@ resource "aws_s3_bucket_public_access_block" "setupBucketAccessBlock" {
 }
 
 
-resource "aws_s3_bucket_object" "tmfReceptionLambda" {
+resource "aws_s3_bucket_object" "twilifyReceptionLambda" {
   bucket  = aws_s3_bucket.setupBucket.id
-  key     = "tmf-reception-lambda.zip"
-  source  = "./lambda/tmf-reception-lambda/tmf-reception-lambda.zip"
+  key     = "twilify-reception-lambda.zip"
+  source  = "./lambda/twilify-reception-lambda/twilify-reception-lambda.zip"
 }
 
-resource "aws_s3_bucket_object" "tmfAppLambda" {
+resource "aws_s3_bucket_object" "twilifyAppLambda" {
   bucket  = aws_s3_bucket.setupBucket.id
-  key     = "tmf-app-lambda.zip"
-  source  = "./lambda/tmf-app-lambda/tmf-app-lambda.zip"
+  key     = "twilify-app-lambda.zip"
+  source  = "./lambda/twilify-app-lambda/twilify-app-lambda.zip"
 }
 
-resource "aws_s3_bucket_object" "tmfAppSongbank" {
+resource "aws_s3_bucket_object" "twilifyAppSongbank" {
   bucket  = aws_s3_bucket.songbankBucket.id
   key     = var.songbank_file_name
   content = jsonencode({})
@@ -69,7 +69,7 @@ resource "aws_s3_bucket_object" "tmfAppSongbank" {
 ## Wait 10 seconds after uploading Lambda zip file before creating function
 resource "time_sleep" "wait_10_seconds1" {
   depends_on = [
-    aws_s3_bucket_object.tmfReceptionLambda
+    aws_s3_bucket_object.twilifyReceptionLambda
   ]
 
   create_duration = "10s"
@@ -77,7 +77,7 @@ resource "time_sleep" "wait_10_seconds1" {
 
 resource "time_sleep" "wait_10_seconds2" {
   depends_on = [
-    aws_s3_bucket_object.tmfAppLambda
+    aws_s3_bucket_object.twilifyAppLambda
   ]
 
   create_duration = "10s"

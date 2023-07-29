@@ -1,5 +1,5 @@
-resource "aws_iam_role" "tmfAppLambdaIamRole" {
-  name = "tmf-lambda-app-role"
+resource "aws_iam_role" "twilifyAppLambdaIamRole" {
+  name = "twilify-lambda-app-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -16,7 +16,7 @@ resource "aws_iam_role" "tmfAppLambdaIamRole" {
   })
 
   inline_policy  {
-    name = "tmf-app-lambda-logging-policy"
+    name = "twilify-app-lambda-logging-policy"
     policy = jsonencode(
 {
     "Version": "2012-10-17",
@@ -33,7 +33,7 @@ resource "aws_iam_role" "tmfAppLambdaIamRole" {
                 "logs:PutLogEvents"
             ],
             "Resource": [
-                "arn:aws:logs:${var.aws_region}:${var.aws_account_id}:log-group:/aws/lambda/tmf:*"
+                "arn:aws:logs:${var.aws_region}:${var.aws_account_id}:log-group:/aws/lambda/twilify:*"
             ]
         }
     ]
@@ -42,7 +42,7 @@ resource "aws_iam_role" "tmfAppLambdaIamRole" {
   } 
 
   inline_policy {
-    name = "tmf-app-lambda-s3-policy"
+    name = "twilify-app-lambda-s3-policy"
     policy = jsonencode(
 {
     "Version": "2012-10-17",
@@ -72,7 +72,7 @@ resource "aws_iam_role" "tmfAppLambdaIamRole" {
   }
 
   inline_policy {
-    name = "tmf-app-lambda-parameter-store-policy"
+    name = "twilify-app-lambda-parameter-store-policy"
     policy = jsonencode (
 {
     "Version": "2012-10-17",
@@ -94,7 +94,7 @@ resource "aws_iam_role" "tmfAppLambdaIamRole" {
   }
 
   inline_policy {
-    name = "tmf-app-lambda-kms-policy"
+    name = "twilify-app-lambda-kms-policy"
     policy = jsonencode (
 {
     "Version": "2012-10-17",
@@ -108,7 +108,7 @@ resource "aws_iam_role" "tmfAppLambdaIamRole" {
               "kms:GenerateDataKey"
             ],
             "Resource": [
-                aws_kms_key.tmf_kms_key.arn
+                aws_kms_key.twilify_kms_key.arn
             ]
         }
     ]
@@ -121,8 +121,8 @@ resource "aws_iam_role" "tmfAppLambdaIamRole" {
 
 
 
-resource "aws_iam_role" "tmfReceptionLambdaIamRole" {
-  name = "tmf-lambda-reception-role"
+resource "aws_iam_role" "twilifyReceptionLambdaIamRole" {
+  name = "twilify-lambda-reception-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -139,7 +139,7 @@ resource "aws_iam_role" "tmfReceptionLambdaIamRole" {
   })
 
   inline_policy  {
-    name = "tmf-reception-lambda-logging-policy"
+    name = "twilify-reception-lambda-logging-policy"
     policy = jsonencode(
 {
     "Version": "2012-10-17",
@@ -156,7 +156,7 @@ resource "aws_iam_role" "tmfReceptionLambdaIamRole" {
                 "logs:PutLogEvents"
             ],
             "Resource": [
-                "arn:aws:logs:${var.aws_region}:${var.aws_account_id}:log-group:/aws/lambda/tmf-reception:*"
+                "arn:aws:logs:${var.aws_region}:${var.aws_account_id}:log-group:/aws/lambda/twilify-reception:*"
             ]
         }
     ]
@@ -165,7 +165,7 @@ resource "aws_iam_role" "tmfReceptionLambdaIamRole" {
   }
 
   inline_policy {
-    name = "tmf-reception-lambda-kms-policy"
+    name = "twilify-reception-lambda-kms-policy"
     policy = jsonencode (
 {
     "Version": "2012-10-17",
@@ -178,7 +178,7 @@ resource "aws_iam_role" "tmfReceptionLambdaIamRole" {
               "kms:Encrypt"
             ],
             "Resource": [
-                aws_kms_key.tmf_kms_key.arn
+                aws_kms_key.twilify_kms_key.arn
             ]
         }
     ]
@@ -187,7 +187,7 @@ resource "aws_iam_role" "tmfReceptionLambdaIamRole" {
   }
 
   inline_policy {
-    name = "tmf-reception-lambda-invoke-policy"
+    name = "twilify-reception-lambda-invoke-policy"
     policy = jsonencode(
 {
     "Version": "2012-10-17",
@@ -199,7 +199,7 @@ resource "aws_iam_role" "tmfReceptionLambdaIamRole" {
 		          "lambda:InvokeFunction"
             ],
             "Resource": [
-                aws_lambda_function.tmfAppLambda.arn
+                aws_lambda_function.twilifyAppLambda.arn
             ]
         }
     ]
@@ -209,23 +209,23 @@ resource "aws_iam_role" "tmfReceptionLambdaIamRole" {
 }
 
 
-resource "aws_lambda_function" "tmfReceptionLambda" {
+resource "aws_lambda_function" "twilifyReceptionLambda" {
   depends_on    = [time_sleep.wait_10_seconds1]
   s3_bucket     = aws_s3_bucket.setupBucket.id
-  s3_key        = "tmf-reception-lambda.zip"
-  function_name = "tmf-reception"
-  role          = aws_iam_role.tmfReceptionLambdaIamRole.arn
+  s3_key        = "twilify-reception-lambda.zip"
+  function_name = "twilify-reception"
+  role          = aws_iam_role.twilifyReceptionLambdaIamRole.arn
   handler       = "reception.lambda_handler"
   timeout       = 6
   runtime       = "python3.6"
-  kms_key_arn   = aws_kms_key.tmf_kms_key.arn
+  kms_key_arn   = aws_kms_key.twilify_kms_key.arn
   environment {
     variables = {
       user_numbers                   = var.user_numbers
       twilio_number                  = var.twilio_number
       twilio_account_sid             = var.twilio_account_sid
       twilio_auth_token              = var.twilio_auth_token 
-      tmf_app_lambda_arn             = "${aws_lambda_function.tmfAppLambda.arn}:$LATEST"
+      twilify_app_lambda_arn             = "${aws_lambda_function.twilifyAppLambda.arn}:$LATEST"
       num_songs_in_playlist          = var.num_songs_in_playlist
       debug                          = var.debug
     }
@@ -233,22 +233,22 @@ resource "aws_lambda_function" "tmfReceptionLambda" {
 }
 
 
-resource "aws_lambda_function" "tmfAppLambda" {
+resource "aws_lambda_function" "twilifyAppLambda" {
   depends_on    = [time_sleep.wait_10_seconds2]
   s3_bucket     = aws_s3_bucket.setupBucket.id
-  s3_key        = "tmf-app-lambda.zip"
-  function_name = "tmf"
-  role          = aws_iam_role.tmfAppLambdaIamRole.arn
-  handler       = "tmf.lambda_handler"
+  s3_key        = "twilify-app-lambda.zip"
+  function_name = "twilify"
+  role          = aws_iam_role.twilifyAppLambdaIamRole.arn
+  handler       = "twilify.lambda_handler"
   timeout       = 60
   runtime       = "python3.6"
-  kms_key_arn   = aws_kms_key.tmf_kms_key.arn
+  kms_key_arn   = aws_kms_key.twilify_kms_key.arn
   environment {
     variables = {
       spotify_client_id              = var.spotify_client_id
       spotify_client_secret          = var.spotify_client_secret
       refresh_token_parameter_name   = aws_ssm_parameter.spotify_refresh_token.name
-      refresh_token_kms_key_arn      = aws_kms_key.tmf_kms_key.arn
+      refresh_token_kms_key_arn      = aws_kms_key.twilify_kms_key.arn
       rec_limit                      = var.rec_limit
       bucket_name                    = aws_s3_bucket.songbankBucket.bucket
       songbank_file_name             = var.songbank_file_name
@@ -265,7 +265,7 @@ resource "aws_lambda_function" "tmfAppLambda" {
 }
 
 
-resource "aws_lambda_function_event_invoke_config" "tmfAppLambdaDestination" {
-  function_name = aws_lambda_function.tmfAppLambda.function_name
+resource "aws_lambda_function_event_invoke_config" "twilifyAppLambdaDestination" {
+  function_name = aws_lambda_function.twilifyAppLambda.function_name
   maximum_retry_attempts = 0
 }

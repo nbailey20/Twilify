@@ -1,6 +1,6 @@
 *.tfstate*
 .terraform*
 *.tfvars*
-lambda/tmf-app-lambda/libraries/*
-lambda/tmf-reception-lambda/libraries/*
+lambda/twilify-app-lambda/libraries/*
+lambda/twilify-reception-lambda/libraries/*
 *.zip
