@@ -11,7 +11,7 @@ def send_error_message(user_number, message):
     try:
         client = Client(account_sid, auth_token)
         client.messages.create(
-            body="TMF Error:\n" + message,
+            body="Twilify Error:\n" + message,
             from_=os.environ["twilio_number"],
             to=unquote(user_number)
         )

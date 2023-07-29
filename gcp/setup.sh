@@ -1,14 +1,14 @@
 #!/bin/bash
 
-echo "Building tmf zip file from sources..."
-cd functions/tmf-app
-rm -f ./tmf-app-function.zip > /dev/null 2>&1
-7z a -r ./tmf-app-function.zip .  > /dev/null 2>&1
+echo "Building twilify zip file from sources..."
+cd functions/twilify-app
+rm -f ./twilify-app-function.zip > /dev/null 2>&1
+7z a -r ./twilify-app-function.zip .  > /dev/null 2>&1
 
-echo "Building tmf reception zip file from sources..."
-cd ../tmf-reception
-rm -f ../tmf-reception-function.zip > /dev/null 2>&1
-7z a -r ./tmf-reception-function.zip .  > /dev/null 2>&1
+echo "Building twilify reception zip file from sources..."
+cd ../twilify-reception
+rm -f ../twilify-reception-function.zip > /dev/null 2>&1
+7z a -r ./twilify-reception-function.zip .  > /dev/null 2>&1
 cd ../..
 
 echo "Initializing, planning, and building application..."
@@ -19,7 +19,7 @@ terraform apply -auto-approve
 
 account=$(terraform output -raw account_sid)
 phone=$(terraform output -raw number_sid)
-url=$(terraform output -raw tmf-invoke-url)
+url=$(terraform output -raw twilify-invoke-url)
 token=$(terraform output -raw token)
 
 echo
@@ -32,7 +32,7 @@ curl -s -XPOST https://api.twilio.com/2010-04-01/Accounts/$account/IncomingPhone
 if [ $? -eq 0 ]
 then
     echo
-    echo "TMF application successfully deployed, text and say hello!"
+    echo "Twilify application successfully deployed, text and say hello!"
 else
-    echo "Uh oh, something went wrong with TMF build..."
+    echo "Uh oh, something went wrong with Twilify build..."
 fi

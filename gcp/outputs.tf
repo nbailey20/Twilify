@@ -1,6 +1,6 @@
 ## Outputs to configure Twilio phone number webhook URL for incoming messages
-output "tmf-invoke-url" {
-  value = google_cloudfunctions_function.tmf_reception_function.https_trigger_url
+output "twilify-invoke-url" {
+  value = google_cloudfunctions_function.twilify_reception_function.https_trigger_url
 }
 
 output "account_sid" {

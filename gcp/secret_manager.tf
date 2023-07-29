@@ -1,6 +1,6 @@
 # ## Spotify Refresh Token
-# resource "google_secret_manager_secret" "tmf_spotify_refresh_token" {
-#     secret_id = "tmf-refresh-token"
+# resource "google_secret_manager_secret" "twilify_spotify_refresh_token" {
+#     secret_id = "twilify-refresh-token"
 
 #     replication {
 #         user_managed {
@@ -14,28 +14,28 @@
 #     }
 
 #     ## Ensure secret manager identity can use key before creating secret
-#     depends_on = [google_kms_crypto_key_iam_binding.tmf_kms_binding]
+#     depends_on = [google_kms_crypto_key_iam_binding.twilify_kms_binding]
 # }
 
-# resource "google_secret_manager_secret_version" "tmf_spotify_refresh_token" {
-#     secret      = google_secret_manager_secret.tmf_spotify_refresh_token.id
+# resource "google_secret_manager_secret_version" "twilify_spotify_refresh_token" {
+#     secret      = google_secret_manager_secret.twilify_spotify_refresh_token.id
 #     secret_data = var.spotify_refresh_token
 # }
 
-# resource "google_secret_manager_secret_iam_binding" "tmf_spotify_token_binding" {
-#     project   = google_secret_manager_secret.tmf_spotify_refresh_token.project
-#     secret_id = google_secret_manager_secret.tmf_spotify_refresh_token.secret_id
+# resource "google_secret_manager_secret_iam_binding" "twilify_spotify_token_binding" {
+#     project   = google_secret_manager_secret.twilify_spotify_refresh_token.project
+#     secret_id = google_secret_manager_secret.twilify_spotify_refresh_token.secret_id
 
 #     role = "roles/secretmanager.secretAccessor"
 #     members = [
-#         google_service_account.tmf_app_sa.member
+#         google_service_account.twilify_app_sa.member
 #     ]
 # }
 
 
 # ## Twilio Account SID
-# resource "google_secret_manager_secret" "tmf_twilio_account_sid" {
-#     secret_id = "tmf-twilio-account-sid"
+# resource "google_secret_manager_secret" "twilify_twilio_account_sid" {
+#     secret_id = "twilify-twilio-account-sid"
 
 #     replication {
 #         user_managed {
@@ -49,29 +49,29 @@
 #     }
 
 #     ## Ensure secret manager identity can use key before creating secret
-#     depends_on = [google_kms_crypto_key_iam_binding.tmf_kms_binding]
+#     depends_on = [google_kms_crypto_key_iam_binding.twilify_kms_binding]
 # }
 
-# resource "google_secret_manager_secret_version" "tmf_twilio_account_sid" {
-#     secret      = google_secret_manager_secret.tmf_twilio_account_sid.id
+# resource "google_secret_manager_secret_version" "twilify_twilio_account_sid" {
+#     secret      = google_secret_manager_secret.twilify_twilio_account_sid.id
 #     secret_data = var.twilio_account_sid
 # }
 
-# resource "google_secret_manager_secret_iam_binding" "tmf_twilio_sid_binding" {
-#     project   = google_secret_manager_secret.tmf_twilio_account_sid.project
-#     secret_id = google_secret_manager_secret.tmf_twilio_account_sid.secret_id
+# resource "google_secret_manager_secret_iam_binding" "twilify_twilio_sid_binding" {
+#     project   = google_secret_manager_secret.twilify_twilio_account_sid.project
+#     secret_id = google_secret_manager_secret.twilify_twilio_account_sid.secret_id
 
 #     role = "roles/secretmanager.secretAccessor"
 #     members = [
-#         google_service_account.tmf_reception_sa.member,
-#         google_service_account.tmf_app_sa.member
+#         google_service_account.twilify_reception_sa.member,
+#         google_service_account.twilify_app_sa.member
 #     ]
 # }
 
 
 # ## Twilio Auth Token
-# resource "google_secret_manager_secret" "tmf_twilio_auth_token" {
-#     secret_id = "tmf-twilio-auth-token"
+# resource "google_secret_manager_secret" "twilify_twilio_auth_token" {
+#     secret_id = "twilify-twilio-auth-token"
 
 #     replication {
 #         user_managed {
@@ -85,22 +85,22 @@
 #     }
 
 #     ## Ensure secret manager identity can use key before creating secret
-#     depends_on = [google_kms_crypto_key_iam_binding.tmf_kms_binding]
+#     depends_on = [google_kms_crypto_key_iam_binding.twilify_kms_binding]
 # }
 
-# resource "google_secret_manager_secret_version" "tmf_twilio_auth_token" {
-#     secret      = google_secret_manager_secret.tmf_twilio_auth_token.id
+# resource "google_secret_manager_secret_version" "twilify_twilio_auth_token" {
+#     secret      = google_secret_manager_secret.twilify_twilio_auth_token.id
 #     secret_data = var.twilio_auth_token
 # }
 
-# resource "google_secret_manager_secret_iam_binding" "tmf_twilio_token_binding" {
-#     project   = google_secret_manager_secret.tmf_twilio_auth_token.project
-#     secret_id = google_secret_manager_secret.tmf_twilio_auth_token.secret_id
+# resource "google_secret_manager_secret_iam_binding" "twilify_twilio_token_binding" {
+#     project   = google_secret_manager_secret.twilify_twilio_auth_token.project
+#     secret_id = google_secret_manager_secret.twilify_twilio_auth_token.secret_id
 
 #     role = "roles/secretmanager.secretAccessor"
 #     members = [
-#         google_service_account.tmf_reception_sa.member,
-#         google_service_account.tmf_app_sa.member
+#         google_service_account.twilify_reception_sa.member,
+#         google_service_account.twilify_app_sa.member
 #     ]
 # }
 
@@ -122,10 +122,10 @@ locals {
 }
 
 
-resource "google_secret_manager_secret" "tmf_secrets" {
+resource "google_secret_manager_secret" "twilify_secrets" {
     for_each = local.app_secrets_map
 
-    secret_id = replace("tmf-${each.key}", "_", "-")
+    secret_id = replace("twilify-${each.key}", "_", "-")
     replication {
         user_managed {
             replicas {
@@ -137,35 +137,35 @@ resource "google_secret_manager_secret" "tmf_secrets" {
         }
     }
     ## Ensure secret manager identity can use key before creating secret
-    depends_on = [google_kms_crypto_key_iam_binding.tmf_kms_binding]
+    depends_on = [google_kms_crypto_key_iam_binding.twilify_kms_binding]
 }
 
-resource "google_secret_manager_secret_version" "tmf_secret_versions" {
+resource "google_secret_manager_secret_version" "twilify_secret_versions" {
     for_each = local.app_secrets_map
 
-    secret      = google_secret_manager_secret.tmf_secrets[each.key].id
+    secret      = google_secret_manager_secret.twilify_secrets[each.key].id
     secret_data = each.value
 }
 
-resource "google_secret_manager_secret_iam_binding" "tmf_secret_read_bindings" {
+resource "google_secret_manager_secret_iam_binding" "twilify_secret_read_bindings" {
     for_each = local.app_secrets_map
 
-    project   = google_secret_manager_secret.tmf_secrets[each.key].project
-    secret_id = google_secret_manager_secret.tmf_secrets[each.key].secret_id
+    project   = google_secret_manager_secret.twilify_secrets[each.key].project
+    secret_id = google_secret_manager_secret.twilify_secrets[each.key].secret_id
 
     role = "roles/secretmanager.secretAccessor"
     members = contains(local.reception_secret_vars_list, each.key) ? [
-            google_service_account.tmf_app_sa.member,
-            google_service_account.tmf_reception_sa.member
+            google_service_account.twilify_app_sa.member,
+            google_service_account.twilify_reception_sa.member
         ] : [
-            google_service_account.tmf_app_sa.member
+            google_service_account.twilify_app_sa.member
         ]
 }
 
-resource "google_secret_manager_secret_iam_binding" "tmf_secret_write_binding" {
-    project   = google_secret_manager_secret.tmf_secrets["spotify_refresh_token"].project
-    secret_id = google_secret_manager_secret.tmf_secrets["spotify_refresh_token"].secret_id
+resource "google_secret_manager_secret_iam_binding" "twilify_secret_write_binding" {
+    project   = google_secret_manager_secret.twilify_secrets["spotify_refresh_token"].project
+    secret_id = google_secret_manager_secret.twilify_secrets["spotify_refresh_token"].secret_id
 
     role    = "roles/secretmanager.secretVersionAdder"
-    members = [google_service_account.tmf_app_sa.member]
+    members = [google_service_account.twilify_app_sa.member]
 }

@@ -1,5 +1,5 @@
 locals {
-    kms_full_name = "projects/${var.gcp_project_id}/locations/${var.gcp_region}/keyRings/${google_kms_key_ring.tmf_keyring.name}/cryptoKeys/${google_kms_crypto_key.tmf_key.name}"
+    kms_full_name = "projects/${var.gcp_project_id}/locations/${var.gcp_region}/keyRings/${google_kms_key_ring.twilify_keyring.name}/cryptoKeys/${google_kms_crypto_key.twilify_key.name}"
 }
 
 resource "random_string" "kms_suffix" {
@@ -7,19 +7,19 @@ resource "random_string" "kms_suffix" {
     special          = false
 }
 
-resource "google_kms_key_ring" "tmf_keyring" {
-    name     = "tmf-keyring-${random_string.kms_suffix.id}"
+resource "google_kms_key_ring" "twilify_keyring" {
+    name     = "twilify-keyring-${random_string.kms_suffix.id}"
     location = var.gcp_region
 }
 
-resource "google_kms_crypto_key" "tmf_key" {
-    name     = "tmf-kms-key-${random_string.kms_suffix.id}"
-    key_ring = google_kms_key_ring.tmf_keyring.id
+resource "google_kms_crypto_key" "twilify_key" {
+    name     = "twilify-kms-key-${random_string.kms_suffix.id}"
+    key_ring = google_kms_key_ring.twilify_keyring.id
 }
 
 ## Ensure services can use KMS
-resource "google_kms_crypto_key_iam_binding" "tmf_kms_binding" {
-    crypto_key_id = "${var.gcp_project_id}/${var.gcp_region}/${google_kms_key_ring.tmf_keyring.name}/${google_kms_crypto_key.tmf_key.name}"
+resource "google_kms_crypto_key_iam_binding" "twilify_kms_binding" {
+    crypto_key_id = "${var.gcp_project_id}/${var.gcp_region}/${google_kms_key_ring.twilify_keyring.name}/${google_kms_crypto_key.twilify_key.name}"
     role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
 
     members = [

@@ -9,7 +9,7 @@ DEBUG = True if os.environ["debug"] == "true" else False
 
     
 def lambda_handler(event, _):
-    if DEBUG: print("DEBUG: starting TMF reception main function")
+    if DEBUG: print("DEBUG: starting Twilify reception main function")
 
     ## validate text event
     source_num = unquote(validate_text_event(event))
@@ -31,15 +31,15 @@ def lambda_handler(event, _):
     ## launch app with parameters and number to txt back to
     playlist_params["user_number"] = source_num
     try:
-        if DEBUG: print("DEBUG: Launching TMF app")
+        if DEBUG: print("DEBUG: Launching Twilify app")
         client = boto3.client("lambda")
         client.invoke(
-            FunctionName="tmf",
+            FunctionName="twilify",
             InvocationType="Event",
             Payload=json.dumps(playlist_params),
         )
-        if DEBUG: print("DEBUG: successfully launched TMF app")
+        if DEBUG: print("DEBUG: successfully launched Twilify app")
         return
     except:      
-        if DEBUG: print("DEBUG: failed to invoke TMF lambda function.")
+        if DEBUG: print("DEBUG: failed to invoke Twilify lambda function.")
         return

@@ -20,7 +20,7 @@ def lambda_handler(event, _):
     ## Make sure internet connectivity is working
     if not s3Handler.test_network_connectivity(DEBUG):
         if DEBUG: print("DEBUG: no network connectivity, about to send error text")
-        twilioHandler.send_error_message(user_number, "TMF has no Internet connectivity, aborting.")
+        twilioHandler.send_error_message(user_number, "Twilify has no Internet connectivity, aborting.")
         return
 
     ## Load songbank file
@@ -109,16 +109,16 @@ def lambda_handler(event, _):
 
     ## All done!
     if num_songs_to_add == 0:
-        if DEBUG: print("DEBUG: no tracks to add to playlist, texting user TMF has nothing to do")
+        if DEBUG: print("DEBUG: no tracks to add to playlist, texting user Twilify has nothing to do")
         twilioHandler.send_completed_message(user_number, "No tracks to update this time!")
     elif num_songs_to_add < 0:
-        if DEBUG: print("DEBUG: user tried to keep playlist but decrease size, texting user that TMF can't tell which songs to remove and will not do anything")
+        if DEBUG: print("DEBUG: user tried to keep playlist but decrease size, texting user that Twilify can't tell which songs to remove and will not do anything")
         twilioHandler.send_completed_message(user_number, "Sorry, but I can't deliver the expected smaller size while keeping all current songs! Please try again.")
     elif num_songs_to_add != len(songs_to_add):
-        if DEBUG: print("DEBUG: fairly successfully completed TMF iteration, about to send success text")
+        if DEBUG: print("DEBUG: fairly successfully completed Twilify iteration, about to send success text")
         twilioHandler.send_completed_message(user_number, "Here are " + str(len(songs_to_add)) + "/" + str(num_songs_to_add) + " songs, the desired number could not be found")
     else:
-        if DEBUG: print("DEBUG: successfully completed TMF iteration, about to send success text")
+        if DEBUG: print("DEBUG: successfully completed Twilify iteration, about to send success text")
         twilioHandler.send_completed_message(user_number, "Enjoy your new " + str(num_songs_to_add) + " songs :)")
     return {
         "status": "200",
