@@ -26,7 +26,7 @@ def load_songbank(DEBUG, sp, songbank_json, params):
         if DEBUG: print("DEBUG: did not find existing playlist ID in songbank")
         playlist_id = None
 
-        ## check for previously made TMF playlist, even if it was a previous installation
+        ## check for previously made Twilify playlist, even if it was a previous installation
         if "overwrite" in params:
             if DEBUG: print("DEBUG: overwrite keyword provided, checking Spotify for pre-existing playlist with expected name in user account")
             playlist_id = playlistHandler.search_for_previous_playlist(DEBUG, sp)

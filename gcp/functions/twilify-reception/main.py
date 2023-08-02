@@ -12,7 +12,7 @@ DEBUG = True if os.environ["debug"] == "true" else False
 
 ## https://flask.palletsprojects.com/en/1.1.x/api/#incoming-request-data
 def main(request):
-    if DEBUG: print("DEBUG: starting TMF reception main function")
+    if DEBUG: print("DEBUG: starting Twilify reception main function")
 
     ## validate text event
     source_num = unquote(validate_request(request.form))
@@ -35,7 +35,7 @@ def main(request):
 
     ## launch app with parameters and number to txt back to
     playlist_params["user_number"] = source_num
-    if DEBUG: print("DEBUG: Launching TMF app")
+    if DEBUG: print("DEBUG: Launching Twilify app")
     message_response = launch_app(playlist_params)
 
     if DEBUG: print(f"DEBUG: {message_response}")

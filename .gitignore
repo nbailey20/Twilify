@@ -3,4 +3,3 @@
 *.tfvars*
 lambda/twilify-app-lambda/libraries/*
 lambda/twilify-reception-lambda/libraries/*
-*.zip
