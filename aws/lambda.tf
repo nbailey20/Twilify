@@ -210,7 +210,7 @@ resource "aws_iam_role" "twilifyReceptionLambdaIamRole" {
 
 
 resource "aws_lambda_function" "twilifyReceptionLambda" {
-  depends_on    = [time_sleep.wait_10_seconds1]
+  depends_on    = [time_sleep.wait_10_seconds1] ## ensure S3 object is completely uploaded
   s3_bucket     = aws_s3_bucket.setupBucket.id
   s3_key        = "twilify-reception-lambda.zip"
   function_name = "twilify-reception"
@@ -221,11 +221,11 @@ resource "aws_lambda_function" "twilifyReceptionLambda" {
   kms_key_arn   = aws_kms_key.twilify_kms_key.arn
   environment {
     variables = {
-      user_numbers                   = var.user_numbers
+      user_numbers                   = var.allowed_user_numbers
       twilio_number                  = var.twilio_number
       twilio_account_sid             = var.twilio_account_sid
       twilio_auth_token              = var.twilio_auth_token 
-      twilify_app_lambda_arn             = "${aws_lambda_function.twilifyAppLambda.arn}:$LATEST"
+      twilify_app_lambda_arn         = "${aws_lambda_function.twilifyAppLambda.arn}:$LATEST"
       num_songs_in_playlist          = var.num_songs_in_playlist
       debug                          = var.debug
     }
@@ -234,7 +234,7 @@ resource "aws_lambda_function" "twilifyReceptionLambda" {
 
 
 resource "aws_lambda_function" "twilifyAppLambda" {
-  depends_on    = [time_sleep.wait_10_seconds2]
+  depends_on    = [time_sleep.wait_10_seconds2] ## ensure S3 object is completely uploaded
   s3_bucket     = aws_s3_bucket.setupBucket.id
   s3_key        = "twilify-app-lambda.zip"
   function_name = "twilify"
@@ -249,16 +249,14 @@ resource "aws_lambda_function" "twilifyAppLambda" {
       spotify_client_secret          = var.spotify_client_secret
       refresh_token_parameter_name   = aws_ssm_parameter.spotify_refresh_token.name
       refresh_token_kms_key_arn      = aws_kms_key.twilify_kms_key.arn
-      rec_limit                      = var.rec_limit
       bucket_name                    = aws_s3_bucket.songbankBucket.bucket
       songbank_file_name             = var.songbank_file_name
-      spotify_user                   = var.spotify_user
-      playlist_name                  = var.playlist_name
+      spotify_user                   = var.spotify_user_id
+      playlist_name                  = var.spotify_playlist_name
       twilio_account_sid             = var.twilio_account_sid
       twilio_auth_token              = var.twilio_auth_token
       twilio_number                  = var.twilio_number
       num_songs_in_playlist          = var.num_songs_in_playlist
-      songbank_cycles_before_rebuild = var.songbank_cycles_before_rebuild
       debug                          = var.debug
     }
   }

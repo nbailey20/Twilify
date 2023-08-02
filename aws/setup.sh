@@ -27,7 +27,7 @@ token=$(terraform output -raw token)
 
 echo
 echo
-echo "Integrating Twilio phone number messaging with AWS deployment..."
+echo "Integrating Twilio phone number messaging with AWS-based Twilify deployment..."
 curl -s -XPOST https://api.twilio.com/2010-04-01/Accounts/$account/IncomingPhoneNumbers/$phone.json \
     --data-urlencode "SmsUrl=$url" \
     -u "$account:$token" > /dev/null 2>&1

@@ -4,6 +4,8 @@
 import s3Handler, playlistHandler, musicQueryHandler, tokenAuthHandler
 import os
 
+NUM_SONGBANK_CYCLES_BEFORE_REBUILD = 2
+
 ##  Takes json songbank file object and Spotify API client
 ##  initializes, creates spotify playlist if first time
 ##  Returns songbank object
@@ -39,7 +41,7 @@ def load_songbank(DEBUG, sp, songbank_json, params):
     if DEBUG: print("DEBUG: checking for expired songbank")
     expired = None
     try:
-        if songbank_json["numCycles"] < int(os.environ["songbank_cycles_before_rebuild"]):
+        if songbank_json["numCycles"] < NUM_SONGBANK_CYCLES_BEFORE_REBUILD:
             if DEBUG: print("DEBUG: found non-expired songbank")
             expired = False
         else:
