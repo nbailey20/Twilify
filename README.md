@@ -8,19 +8,39 @@ One-script installation/deployment into AWS or GCP (why not both? ;) and automat
 # Installation
 
 ## Prerequisites
-* AWS CLI or gcloud installed - https://aws.amazon.com/cli/ or https://cloud.google.com/sdk/docs/install
-* Terraform installed - https://www.terraform.io/
+* AWS CLI or gcloud - https://aws.amazon.com/cli/ or https://cloud.google.com/sdk/docs/install
+* Python3 (required for installation script)
+* Terraform configured with AWS or GCP - https://www.terraform.io/
 * A Twilio phone number capable of sending/receiving SMS - https://console.twilio.com/
     * As of July 2023, a verified A2P campaign is required for CPaaS usage, several days to get approved for personal use-case
 * A Spotify account
 * A Spotify application created at https://developer.spotify.com/ allowing API access to your account
 
 ## Instructions
-1. To start install, change directory to twilify/aws or twilify/gcp
-2. Provide various account information needed in terraform.tfvars file (see variables.tf file for reference) - account/project ID, Spotify account, Twilio number, etc
-3. Make sure terraform is installed and that it has access with necessary permission to create resources in your chosen Cloud provider
-4. Run setup.sh script to build and deploy app, as well as update Twilio phone number webhook URL, no manual configuration required
-5. Text your Twilify number to say hi, and enjoy your new playlist :)
+1. To start install, change directory to twilify/installation
+2. Provide values for variables in terraform.auto.tfvars file - account/project ID, Spotify account, Twilio number, etc
+    * For information around obtaining these values, see below section
+    * If hosting Twilify in AWS, remove gcp variables: gcp_project_id, gcp_region
+    * If hosting Twilify in GCP, remove aws variables: aws_account_id, aws_region
+3. Run setup.sh script to build and deploy app
+4. Text your Twilify number to say hi, and enjoy your new playlist :)
+
+
+## Determining tfvars Values
+
+### Cloud Variables
+* aws_account_id or gcp_project_id: Login to Cloud console and grab 12-digit AWS account ID or GCP project ID string
+* aws_region or gcp_region: Region where Twilify should be deployed in Cloud, i.e. us-east-1 or similar for AWS, us-east1 or similar for GCP
+
+### Spotify Variables
+* spotify_user_id: Login to Spotify and find string of digits on account page
+* spotify_client_id and spotify_client_secret: Login to https://developer.spotify.com/, select your Twilify application, obtain values from settings page
+
+### Twilio Variables
+* twilio_account_sid and twilio_auth_token: Login to https://console.twilio.com/, navigate to your Twilio project, obtain values from Account Info panel
+* twilio_number: In same Twilio project, navigate to Phone Numbers->Manage->Active Numbers and copy value including +1 extension, i.e. '+12325556666'
+* twilio_number_sid: After copying twilio_number, click on the number and navigate to Properties tab to obtain SID
+* allowed_user_numbers: List of numbers (with +1 extension) that should be allowed to text Twilify and trigger playlist generation, i.e. ['+12325556666', ...]
 
 # Usage
 
@@ -42,7 +62,7 @@ One-script installation/deployment into AWS or GCP (why not both? ;) and automat
 | Size [number]               | size 21                     | Add this many songs to the playlist for one iteration                                                  |
 | Keep                        | keep                        | Does not get rid of all songs automatically,  attempts to add new songs to reach desired size          |
 | Seeds [number]              | seeds 9                     | Do NOT update playlist, but return name of song(s) that  helped generate the 9th track in the playlist |
-| Overwrite                   | overwrite                   | (Initial text after install only) Use if Twilify was installed previously and there is an existing playlist with correct name to overwrite instead of creating new |
+| Overwrite                   | overwrite                   | (Initial text after install only) Use if Twilify was installed previously and there is an existing playlist with desired name to overwrite instead of creating new |
 
 
 # Uninstall
