@@ -1,6 +1,6 @@
 ## Main application flow
 
-import os, json
+import os
 import musicQueryHandler, playlistHandler, twilioHandler, s3Handler, songbankHandler, tokenAuthHandler
 
 ## Terraform bools not capitalized unlike Python
