@@ -22,7 +22,9 @@ One-script installation/deployment into AWS or GCP (why not both? ;) and automat
     * For information around obtaining these values, see below section
     * If hosting Twilify in AWS, remove gcp variables: gcp_project_id, gcp_region
     * If hosting Twilify in GCP, remove aws variables: aws_account_id, aws_region
-3. Run setup.sh script to build and deploy app
+3. Execute install.sh script and indicate which Cloud provider to use
+    * For AWS: ```./install.sh aws```
+    * For GCP: ```./install.sh gcp```
 4. Text your Twilify number to say hi, and enjoy your new playlist :)
 
 
