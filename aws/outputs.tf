@@ -17,3 +17,7 @@ output "token" {
   value = var.twilio_auth_token
   sensitive = true
 }
+
+output "twilio_number" {
+  value = var.twilio_number
+}

@@ -40,9 +40,9 @@ One-script installation/deployment into AWS or GCP (why not both? ;) and automat
 
 ### Twilio Variables
 * twilio_account_sid and twilio_auth_token: Login to https://console.twilio.com/, navigate to your Twilio project, obtain values from Account Info panel
-* twilio_number: In same Twilio project, navigate to Phone Numbers->Manage->Active Numbers and copy value including +1 extension, i.e. '+12325556666'
+* twilio_number: In same Twilio project, navigate to Phone Numbers->Manage->Active Numbers and copy value including +1 extension, i.e. "+12325556666"
 * twilio_number_sid: After copying twilio_number, click on the number and navigate to Properties tab to obtain SID
-* allowed_user_numbers: List of numbers (with +1 extension) that should be allowed to text Twilify and trigger playlist generation, i.e. ['+12325556666', ...]
+* allowed_user_numbers: List of numbers (with +1 extension) that should be allowed to text Twilify and trigger playlist generation, i.e. ["+12325556666", ...]
 
 # Usage
 
