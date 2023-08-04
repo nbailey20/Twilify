@@ -56,6 +56,7 @@ def get_refresh_token(auth_code, client_id, client_secret):
 
 
 def main():
+    ## Usage: python get_refresh_token.py client_id client_secret
     if len(sys.argv) != 3:
         return
 

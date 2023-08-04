@@ -1,214 +1,3 @@
-resource "aws_iam_role" "twilifyAppLambdaIamRole" {
-  name = "twilify-lambda-app-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Sid    = ""
-        Principal = {
-          Service = "lambda.amazonaws.com"
-        }
-      },
-    ]
-  })
-
-  inline_policy  {
-    name = "twilify-app-lambda-logging-policy"
-    policy = jsonencode(
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": "logs:CreateLogGroup",
-            "Resource": "arn:aws:logs:${var.aws_region}:${var.aws_account_id}:*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-            ],
-            "Resource": [
-                "arn:aws:logs:${var.aws_region}:${var.aws_account_id}:log-group:/aws/lambda/twilify:*"
-            ]
-        }
-    ]
-}
-    )
-  } 
-
-  inline_policy {
-    name = "twilify-app-lambda-s3-policy"
-    policy = jsonencode(
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": [
-                "s3:GetObject",
-                "s3:PutObject"
-            ],
-            "Resource": [
-                "${aws_s3_bucket.songbankBucket.arn}/*"
-            ]
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "s3:ListBucket"
-            ],
-            "Resource": [
-                aws_s3_bucket.songbankBucket.arn
-            ]
-        },
-    ]
-}
-    )
-  }
-
-  inline_policy {
-    name = "twilify-app-lambda-parameter-store-policy"
-    policy = jsonencode (
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "",
-            "Effect": "Allow",
-            "Action": [
-              "ssm:GetParameter",
-              "ssm:PutParameter"
-            ],
-            "Resource": [
-                aws_ssm_parameter.spotify_refresh_token.arn
-            ]
-        }
-    ]
-}
-    )
-  }
-
-  inline_policy {
-    name = "twilify-app-lambda-kms-policy"
-    policy = jsonencode (
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "",
-            "Effect": "Allow",
-            "Action": [
-              "kms:Decrypt",
-              "kms:Encrypt",
-              "kms:GenerateDataKey"
-            ],
-            "Resource": [
-                aws_kms_key.twilify_kms_key.arn
-            ]
-        }
-    ]
-}
-    )
-  }
-}
-
-
-
-
-
-resource "aws_iam_role" "twilifyReceptionLambdaIamRole" {
-  name = "twilify-lambda-reception-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Sid    = ""
-        Principal = {
-          Service = "lambda.amazonaws.com"
-        }
-      },
-    ]
-  })
-
-  inline_policy  {
-    name = "twilify-reception-lambda-logging-policy"
-    policy = jsonencode(
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Effect": "Allow",
-            "Action": "logs:CreateLogGroup",
-            "Resource": "arn:aws:logs:${var.aws_region}:${var.aws_account_id}:*"
-        },
-        {
-            "Effect": "Allow",
-            "Action": [
-                "logs:CreateLogStream",
-                "logs:PutLogEvents"
-            ],
-            "Resource": [
-                "arn:aws:logs:${var.aws_region}:${var.aws_account_id}:log-group:/aws/lambda/twilify-reception:*"
-            ]
-        }
-    ]
-}
-    )
-  }
-
-  inline_policy {
-    name = "twilify-reception-lambda-kms-policy"
-    policy = jsonencode (
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "",
-            "Effect": "Allow",
-            "Action": [
-              "kms:Decrypt",
-              "kms:Encrypt"
-            ],
-            "Resource": [
-                aws_kms_key.twilify_kms_key.arn
-            ]
-        }
-    ]
-}
-    )
-  }
-
-  inline_policy {
-    name = "twilify-reception-lambda-invoke-policy"
-    policy = jsonencode(
-{
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "",
-            "Effect": "Allow",
-            "Action": [
-		          "lambda:InvokeFunction"
-            ],
-            "Resource": [
-                aws_lambda_function.twilifyAppLambda.arn
-            ]
-        }
-    ]
-}
-    )
-  }
-}
-
-
 resource "aws_lambda_function" "twilifyReceptionLambda" {
   depends_on    = [time_sleep.wait_10_seconds1] ## ensure S3 object is completely uploaded
   s3_bucket     = aws_s3_bucket.setupBucket.id
@@ -217,7 +6,7 @@ resource "aws_lambda_function" "twilifyReceptionLambda" {
   role          = aws_iam_role.twilifyReceptionLambdaIamRole.arn
   handler       = "reception.lambda_handler"
   timeout       = 6
-  runtime       = "python3.6"
+  runtime       = "python3.11"
   kms_key_arn   = aws_kms_key.twilify_kms_key.arn
   environment {
     variables = {
@@ -232,7 +21,6 @@ resource "aws_lambda_function" "twilifyReceptionLambda" {
   }
 }
 
-
 resource "aws_lambda_function" "twilifyAppLambda" {
   depends_on    = [time_sleep.wait_10_seconds2] ## ensure S3 object is completely uploaded
   s3_bucket     = aws_s3_bucket.setupBucket.id
@@ -241,7 +29,7 @@ resource "aws_lambda_function" "twilifyAppLambda" {
   role          = aws_iam_role.twilifyAppLambdaIamRole.arn
   handler       = "twilify.lambda_handler"
   timeout       = 60
-  runtime       = "python3.6"
+  runtime       = "python3.11"
   kms_key_arn   = aws_kms_key.twilify_kms_key.arn
   environment {
     variables = {
@@ -262,8 +50,14 @@ resource "aws_lambda_function" "twilifyAppLambda" {
   }
 }
 
-
+## Do not attempt to asynchronously invoke app lambda more than once - it should text if error
+## Override default behavior of 2 attempts
 resource "aws_lambda_function_event_invoke_config" "twilifyAppLambdaDestination" {
   function_name = aws_lambda_function.twilifyAppLambda.function_name
   maximum_retry_attempts = 0
+}
+
+resource "aws_lambda_function_url" "twilifyReceptionLambdaFunctionUrl" {
+  function_name      = aws_lambda_function.twilifyReceptionLambda.function_name
+  authorization_type = "NONE"
 }

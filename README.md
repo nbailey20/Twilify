@@ -17,7 +17,7 @@ One-script installation/deployment into AWS or GCP (why not both? ;) and automat
 * A Spotify application created at https://developer.spotify.com/ allowing API access to your account
 
 ## Instructions
-1. To start install, change directory to twilify/installation
+1. To start install, ```cd installation/```
 2. Provide values for variables in terraform.auto.tfvars file - account/project ID, Spotify account, Twilio number, etc
     * For information around obtaining these values, see below section
     * If hosting Twilify in AWS, remove gcp variables: gcp_project_id, gcp_region

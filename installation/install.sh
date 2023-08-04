@@ -24,8 +24,7 @@ configure_twilio() {
     sid=$(terraform output -raw number_sid)
     url=$(terraform output -raw twilify-invoke-url)
     token=$(terraform output -raw token)
-    number=$(terraform output -raw twilio-number)
-
+    number=$(terraform output -raw twilio_number)
     echo
     echo
     echo "Integrating Twilio phone number messaging with Twilify deployment..."

@@ -1,5 +1,4 @@
 resource "aws_s3_bucket" "songbankBucket" {
-  acl = "private"
   bucket_prefix = "twilify-songbank-"
   tags = {
     Name = "Twilify Songbank Bucket"
@@ -23,7 +22,6 @@ resource "aws_s3_bucket_public_access_block" "songbankBucketAccessBlock" {
 }
 
 resource "aws_s3_bucket" "setupBucket" {
-  acl = "private"
   bucket_prefix = "twilify-setup-"
   tags = {
     Name = "Twilify Setup Bucket"
@@ -47,19 +45,19 @@ resource "aws_s3_bucket_public_access_block" "setupBucketAccessBlock" {
 }
 
 
-resource "aws_s3_bucket_object" "twilifyReceptionLambda" {
+resource "aws_s3_object" "twilifyReceptionLambda" {
   bucket  = aws_s3_bucket.setupBucket.id
   key     = "twilify-reception-lambda.zip"
   source  = "./lambda/twilify-reception-lambda/twilify-reception-lambda.zip"
 }
 
-resource "aws_s3_bucket_object" "twilifyAppLambda" {
+resource "aws_s3_object" "twilifyAppLambda" {
   bucket  = aws_s3_bucket.setupBucket.id
   key     = "twilify-app-lambda.zip"
   source  = "./lambda/twilify-app-lambda/twilify-app-lambda.zip"
 }
 
-resource "aws_s3_bucket_object" "twilifyAppSongbank" {
+resource "aws_s3_object" "twilifyAppSongbank" {
   bucket  = aws_s3_bucket.songbankBucket.id
   key     = var.songbank_file_name
   content = jsonencode({})
@@ -69,7 +67,7 @@ resource "aws_s3_bucket_object" "twilifyAppSongbank" {
 ## Wait 10 seconds after uploading Lambda zip file before creating function
 resource "time_sleep" "wait_10_seconds1" {
   depends_on = [
-    aws_s3_bucket_object.twilifyReceptionLambda
+    aws_s3_object.twilifyReceptionLambda
   ]
 
   create_duration = "10s"
@@ -77,7 +75,7 @@ resource "time_sleep" "wait_10_seconds1" {
 
 resource "time_sleep" "wait_10_seconds2" {
   depends_on = [
-    aws_s3_bucket_object.twilifyAppLambda
+    aws_s3_object.twilifyAppLambda
   ]
 
   create_duration = "10s"

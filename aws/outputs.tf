@@ -1,6 +1,6 @@
 ## Outputs to configure Twilio phone number webhook URL for incoming messages
 output "twilify-invoke-url" {
-  value = "${aws_api_gateway_stage.twilifyApiStage.invoke_url}/${aws_api_gateway_resource.twilifyApiResource.path_part}"
+  value = aws_lambda_function_url.twilifyReceptionLambdaFunctionUrl
 }
 
 output "account_sid" {

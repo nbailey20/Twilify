@@ -23,6 +23,7 @@ def test_valid_sms_event(event):
 
 
 def validate_text_event(event):
+    print(event)
     ## handle SMS events
     if "SmsSid" in event and test_valid_sms_event(event):
         return event["From"]
