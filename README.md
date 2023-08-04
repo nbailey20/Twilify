@@ -15,6 +15,7 @@ One-script installation/deployment into AWS or GCP (why not both? ;) and automat
     * As of July 2023, a verified A2P campaign is required for CPaaS usage, several days to get approved for personal use-case
 * A Spotify account
 * A Spotify application created at https://developer.spotify.com/ allowing API access to your account
+    * Note: application Redirect URI must be set to "http://127.0.0.1"
 
 ## Instructions
 1. To start install, ```cd installation/```
