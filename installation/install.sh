@@ -19,7 +19,7 @@ execute_terraform() {
 }
 
 configure_twilio() {
-    ## Setup Twilio webhook to invoke Twilify API when texted
+    ## Setup Twilio webhook to make POST request to Twilify API when texted
     account=$(terraform output -raw account_sid)
     sid=$(terraform output -raw number_sid)
     url=$(terraform output -raw twilify-invoke-url)
@@ -28,7 +28,7 @@ configure_twilio() {
 
     echo
     echo
-    echo "Integrating Twilio phone number messaging with AWS-based Twilify deployment..."
+    echo "Integrating Twilio phone number messaging with Twilify deployment..."
     curl -s -XPOST https://api.twilio.com/2010-04-01/Accounts/$account/IncomingPhoneNumbers/$sid.json \
         --data-urlencode "SmsUrl=$url" \
         -u "$account:$token" > /dev/null 2>&1
