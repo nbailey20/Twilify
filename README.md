@@ -3,7 +3,7 @@ Generate a Spotify playlist based on your current musical interests or mood by t
 Easy AWS or GCP-based serverless deployment automated via Terraform.
 
 ## Current Version: 2.0.0 - Multi-Cloud (AWS & GCP) Support
-One-script installation/deployment into AWS or GCP (why not both? ;) and automated Twilio webhook configuration for easy use. Once texted, initial playlist is created with name "Twilify" within seconds. Experiment with personalized playlist customization through text-based keywords, grant your friends permission to text the app themselves, investigate a hit new track and see how it was generated, but most importantly - quit trying to decide what music to listen to!
+One-script installation/deployment into AWS or GCP (why not both? ;) and automated Twilio webhook configuration for easy use. Once texted, initial Spotify playlist is created with name "Twilify" within seconds. Experiment with personalized playlist customization through text-based keywords, grant your friends permission to text the app themselves, investigate a hit new track and see how it was generated, but most importantly - quit trying to decide what music to listen to!
 
 # Installation
 
@@ -26,7 +26,7 @@ One-script installation/deployment into AWS or GCP (why not both? ;) and automat
 3. Execute install.sh script and indicate which Cloud provider to use
     * For AWS: ```./install.sh aws```
     * For GCP: ```./install.sh gcp```
-4. Text your Twilify number to say hi, and enjoy your new playlist :)
+4. Text your Twilify number to say hi, and check out your new playlist in Spotify :)
 
 
 ## Determining tfvars Values
