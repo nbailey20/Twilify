@@ -3,15 +3,15 @@ resource "aws_s3_bucket" "songbankBucket" {
   tags = {
     Name = "Twilify Songbank Bucket"
   }
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = aws_kms_key.twilify_kms_key.arn
-        sse_algorithm     = "aws:kms"
-      }
-    }
+}
+
+resource "aws_s3_bucket" "setupBucket" {
+  bucket_prefix = "twilify-setup-"
+  tags = {
+    Name = "Twilify Setup Bucket"
   }
 }
+
 
 resource "aws_s3_bucket_public_access_block" "songbankBucketAccessBlock" {
   bucket = aws_s3_bucket.songbankBucket.id
@@ -21,27 +21,35 @@ resource "aws_s3_bucket_public_access_block" "songbankBucketAccessBlock" {
   restrict_public_buckets = true
 }
 
-resource "aws_s3_bucket" "setupBucket" {
-  bucket_prefix = "twilify-setup-"
-  tags = {
-    Name = "Twilify Setup Bucket"
-  }
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        kms_master_key_id = aws_kms_key.twilify_kms_key.arn
-        sse_algorithm     = "aws:kms"
-      }
-    }
-  }
-}
-
 resource "aws_s3_bucket_public_access_block" "setupBucketAccessBlock" {
   bucket = aws_s3_bucket.setupBucket.id
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+}
+
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "songbankBucketSSE" {
+  bucket = aws_s3_bucket.songbankBucket.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.twilify_kms_key.arn
+      sse_algorithm     = "aws:kms"
+    }
+  }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "setupBucketSSE" {
+  bucket = aws_s3_bucket.setupBucket.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.twilify_kms_key.arn
+      sse_algorithm     = "aws:kms"
+    }
+  }
 }
 
 

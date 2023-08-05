@@ -33,19 +33,15 @@ def lambda_handler(event, _):
 
 
     ## Retrieve and decrypt refresh token data from SSM Parameter Store
-    current_refresh_token = tokenAuthHandler.retrieve_refresh_token(DEBUG)
-    if not current_refresh_token:
+    refresh_token = tokenAuthHandler.retrieve_refresh_token(DEBUG)
+    if not refresh_token:
         if DEBUG: print("DEBUG: could not retrieve saved Spotify refresh token, about to send error text")
         twilioHandler.send_error_message(user_number, "Could not retrieve Spotify refresh token from Parameter Store")
         return
 
 
     ## Authenticate to Spotify
-    sp, next_refresh_token = tokenAuthHandler.auth_spotify(DEBUG, current_refresh_token)
-    if not next_refresh_token:
-        if DEBUG: print("DEBUG: could not retrieve next refresh token from auth spotify, about to send error text")
-        twilioHandler.send_error_message(user_number, "Did not receive new access token from Spotify, please try again in case Spotify is currently busy.")
-        return
+    sp = tokenAuthHandler.auth_spotify(DEBUG, refresh_token)
     if not sp:
         if DEBUG: print("DEBUG: could not retrieve api client object from auth spotify call, about to send error text")
         twilioHandler.send_error_message(user_number, "Could not create API client with Spotify token")
@@ -77,8 +73,8 @@ def lambda_handler(event, _):
         if DEBUG: print("DEBUG: seed info gathered, texting user song gen info")
         twilioHandler.send_completed_message(user_number, "Seeds of '" + track + "': " + ", ".join(seeds))
         return {
-        "status": "200",
-        "body": "success"
+            "status": "200",
+            "body": "success"
         }
 
 
@@ -94,7 +90,7 @@ def lambda_handler(event, _):
 
     ## Add new songs to songbank and write data to S3 for next time
     ## Save Spotify refresh token for next invocation
-    if not songbankHandler.save_songbank(DEBUG, songbank, songs_to_add, next_refresh_token):
+    if not songbankHandler.save_songbank(DEBUG, songbank, songs_to_add):
         if DEBUG: print("DEBUG: could not save songbank to s3, about to send error text")
         twilioHandler.send_error_message(user_number, "Could not save songbank to S3")
         return

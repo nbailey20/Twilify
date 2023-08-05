@@ -3,13 +3,13 @@
 from random import randrange
 
 
-NUM_OLD_FAV_SEEDS: 30
-NUM_MEDIUM_FAV_SEEDS: 20
-NUM_NEW_FAV_SEEDS: 10
+NUM_OLD_FAV_SEEDS    = 30
+NUM_MEDIUM_FAV_SEEDS = 20
+NUM_NEW_FAV_SEEDS    = 10
 
-MAX_SONG_RECS_FROM_QUERY: 5
-MAX_SONG_REC_ATTEMPTS: 5
-MAX_SEEDS_PER_REC: 3
+MAX_SONG_RECS_FROM_QUERY = 5
+MAX_SONG_REC_ATTEMPTS    = 5
+MAX_SEEDS_PER_REC        = 3
 
 
 ## Create Spotify query parameter object from user-provided input

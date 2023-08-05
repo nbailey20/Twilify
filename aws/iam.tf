@@ -51,5 +51,5 @@ resource "aws_iam_role_policy_attachment" "twilifyAppLambdaIamPolicyAttachment" 
 
 resource "aws_iam_role_policy_attachment" "twilifyReceptionLambdaIamPolicyAttachment" {
   role       = aws_iam_role.twilifyReceptionLambdaIamRole.name
-  policy_arn = aws_iam_policy.twilifyAppLambdaIamPolicy.arn
+  policy_arn = aws_iam_policy.twilifyReceptionLambdaIamPolicy.arn
 }

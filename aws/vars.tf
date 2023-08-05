@@ -16,7 +16,7 @@ variable "twilio_account_sid" {}
 variable "twilio_auth_token" {}
 variable "twilio_number" {}
 variable "twilio_number_sid" {}
-variable "allowed_user_numbers" {}
+variable "allowed_source_numbers" {}
 
 variable "songbank_file_name" {
   default = "twilify-songbank"
