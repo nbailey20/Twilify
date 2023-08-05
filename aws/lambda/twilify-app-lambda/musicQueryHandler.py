@@ -1,41 +1,22 @@
 ## Handles all Spotify API Music recommendation & search operations
 
-import os
 from random import randrange
 
 
-## Return a list of current user's top track Spotify IDs given authenticated API client object
-def get_fav_tracks(DEBUG, sp):
-    fav_tracks = []
-    try:
-        tracks = sp.current_user_top_tracks(limit=30, time_range="long_term")
-        tracks = tracks["items"]
-        for track in tracks:
-            fav_tracks.append({"name": track["name"], "id": track["id"]})
+NUM_OLD_FAV_SEEDS    = 30
+NUM_MEDIUM_FAV_SEEDS = 20
+NUM_NEW_FAV_SEEDS    = 10
 
-        tracks = sp.current_user_top_tracks(limit=20, time_range="medium_term")
-        tracks = tracks["items"]
-        for track in tracks:
-            fav_tracks.append({"name": track["name"], "id": track["id"]})
-
-        tracks = sp.current_user_top_tracks(limit=10, time_range="short_term")
-        tracks = tracks["items"]
-        for track in tracks:
-            fav_tracks.append({"name": track["name"], "id": track["id"]})
-        
-        if DEBUG: print("DEBUG: successfully retrieved user's fav tracks")
-        return fav_tracks
-    except:
-        if DEBUG: print("DEBUG: could not get user's favorite tracks, aborting")
-        return False
+MAX_SONG_RECS_FROM_QUERY = 5
+MAX_SONG_REC_ATTEMPTS    = 5
+MAX_SEEDS_PER_REC        = 3
 
 
 ## Create Spotify query parameter object from user-provided input
 def create_query_object(params):
-    ## add mandatory params to object
     req_params = {}
 
-    ## add additional params if provided
+    ## add params if SMS keywords provided
     if "happy" in params:
         req_params["min_valence"] = 0.8
     if "sad" in params:
@@ -56,7 +37,34 @@ def create_query_object(params):
         req_params["min_danceability"] = 0.6
 
     return req_params
-    
+
+
+
+## Return a list of current user's top track Spotify IDs given authenticated API client object
+def get_fav_tracks(DEBUG, sp):
+    fav_tracks = []
+    try:
+        tracks = sp.current_user_top_tracks(limit=NUM_OLD_FAV_SEEDS, time_range="long_term")
+        tracks = tracks["items"]
+        for track in tracks:
+            fav_tracks.append({"name": track["name"], "id": track["id"]})
+
+        tracks = sp.current_user_top_tracks(limit=NUM_MEDIUM_FAV_SEEDS, time_range="medium_term")
+        tracks = tracks["items"]
+        for track in tracks:
+            fav_tracks.append({"name": track["name"], "id": track["id"]})
+
+        tracks = sp.current_user_top_tracks(limit=NUM_NEW_FAV_SEEDS, time_range="short_term")
+        tracks = tracks["items"]
+        for track in tracks:
+            fav_tracks.append({"name": track["name"], "id": track["id"]})
+        
+        if DEBUG: print("DEBUG: successfully retrieved user's fav tracks")
+        return fav_tracks
+    except:
+        if DEBUG: print("DEBUG: could not get user's favorite tracks, aborting")
+        return False
+
 
 
 ## Return a list of Spotify track recommendations based on a seed of 1+ track IDs
@@ -66,7 +74,7 @@ def get_track_recs(sp, seeds, params):
     recs = []
     try:
         tracks = sp.recommendations(
-            limit = os.environ["rec_limit"],
+            limit = MAX_SONG_RECS_FROM_QUERY,
             seed_tracks = seed_ids,
             **req_params
         )
@@ -84,12 +92,12 @@ def get_track_recs(sp, seeds, params):
 def get_song_recs_from_seeds(DEBUG, sp, songbank, params, num_songs):
     songs_list = []
     for i in range(num_songs):
-        if DEBUG: print("DEBUG: getting track recommendation " + str(i+1))
+        if DEBUG: print(f"DEBUG: getting track recommendation {i+1}")
         attempts = 0
-        while attempts < 5:
+        while attempts < MAX_SONG_REC_ATTEMPTS:
 
-            ## Get random seed size [1,3] for song generation
-            seedSize = randrange(3)+1
+            ## Get random number of seeds for song generation
+            seedSize = randrange(MAX_SEEDS_PER_REC)+1
 
             ## Make sure we have seedSize songs in new songbank list to choose from
             ## if not, add all used songs back to new before choosing
@@ -112,7 +120,7 @@ def get_song_recs_from_seeds(DEBUG, sp, songbank, params, num_songs):
             ## If no recommendations available, start over with different seeds until max attempts reached
             recs = get_track_recs(sp, seeds, params)
             if not recs:
-                if DEBUG: print("DEBUG: did not find results with current seeds attempt " + str(attempts+1) + "/5")
+                if DEBUG: print(f"DEBUG: did not find results with current seeds attempt {attempts+1}/{MAX_SONG_REC_ATTEMPTS}")
                 attempts += 1
                 continue
 
@@ -127,14 +135,14 @@ def get_song_recs_from_seeds(DEBUG, sp, songbank, params, num_songs):
             for st in songbank['playlistTracks']:
                 if st["id"] == suggested:
                     already_exists = True
-                    if DEBUG: print("DEBUG: song is already in playlist from previous iteration, attempt " + str(attempts+1) + "/5")
+                    if DEBUG: print(f"DEBUG: song is already in playlist from previous iteration, attempt {attempts+1}/{MAX_SONG_REC_ATTEMPTS}")
                     break
 
             ## Make sure song hasn't been suggested already this iteration
             for id in songs_list:
                 if id == suggested:
                     already_exists = True
-                    if DEBUG: print("DEBUG: song was already discovered this iteration, attempt " + str(attempts+1) + "/5")
+                    if DEBUG: print(f"DEBUG: song was already discovered this iteration, attempt {attempts+1}/{MAX_SONG_REC_ATTEMPTS}")
                     break
 
             ## save suggested song

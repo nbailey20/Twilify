@@ -1,4 +1,0 @@
-twilio
-spotipy
-google-cloud-storage
-google-cloud-secret-manager
