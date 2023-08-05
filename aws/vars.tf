@@ -22,6 +22,7 @@ variable "songbank_file_name" {
   default = "twilify-songbank"
 }
 
+## Write helpful Lambda function execution info to CloudWatch logs
 variable "debug" {
-  default = false
+  default = true
 }
