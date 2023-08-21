@@ -16,7 +16,11 @@ cd ..
 7z a twilify-reception-lambda.zip *.py  > /dev/null 2>&1
 cd ../..
 
-terraform taint aws_s3_object.twilifyAppLambda
-terraform taint aws_lambda_function.twilifyAppLambda
-terraform taint time_sleep.wait_10_seconds2
-#terraform taint aws_lambda_permission.allow_anonymous_reception_invocation
+terraform taint aws_s3_object.twilifyReceptionLambda
+terraform taint aws_lambda_function.twilifyReceptionLambda
+terraform taint time_sleep.wait_10_seconds1
+terraform taint aws_lambda_permission.allow_anonymous_reception_invocation
+
+# terraform taint aws_s3_object.twilifyAppLambda
+# terraform taint aws_lambda_function.twilifyAppLambda
+# terraform taint time_sleep.wait_10_seconds2
