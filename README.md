@@ -5,6 +5,9 @@ Easy AWS or GCP-based serverless deployment automated via Terraform.
 ## Current Version: 2.0.0 - Multi-Cloud (AWS & GCP) Support
 One-script installation/deployment into AWS or GCP (why not both? ;) and automated Twilio webhook configuration for easy use. Once texted, initial Spotify playlist is created with name "Twilify" within seconds. Experiment with personalized playlist customization through text-based keywords, grant your friends permission to text the app themselves, investigate a hit new track and see how it was generated, but most importantly - quit trying to decide what music to listen to!
 
+# High-Level Architecture
+![Architecture Diagram](/installation/architecture_diagram.jpg?raw=true)
+
 # Installation
 
 ## Prerequisites
