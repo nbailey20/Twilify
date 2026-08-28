@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>HACC App</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+      padding: 0 10px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #38bdf8;
+    }
+
+    .main-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: none;
+      background: #38bdf8;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background: #0ea5e9;
+    }
+
+    .error {
+      border: 1px solid #ef4444;
+      color: #fecaca;
+    }
+
+    .success {
+      border: 1px solid #22c55e;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Big Boobie Test</h1>
+
+    <div class="main-box" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; max-width: 600px;">
+      <button id="generatePlaylist" style="width: 100%;">Go!</button>
+    </div>
+
+    <div id="output"></div>
+  </div>
+
+  <script>
+    const GENERATE_URL = '/api/generate-playlist';
+    const AUTH_CHECK_URL = '/api/auth-check';
+    const REDIRECT_URL = 'https://${FRONTEND_DOMAIN}/api/callback';
+    const SCOPE = 'email+openid';
+
+    const LOGIN_URL = `https://${COGNITO_DOMAIN}/login?client_id=${CLIENT_ID}&response_type=code&scope=$${SCOPE}&redirect_uri=$${encodeURIComponent(REDIRECT_URL)}`;
+
+    // ===== AUTH CHECK =====
+    async function checkAuth() {
+      try {
+        const res = await fetch(AUTH_CHECK_URL, { credentials: 'include' });
+        if (res.ok) return true;
+        if (res.status === 401) window.location.href = LOGIN_URL;
+        return false;
+      } catch {
+        return false;
+      }
+    }
+
+    function renderResponse(msg) {
+      document.getElementById('output').innerHTML = `
+        <div class="card success">$${msg}</div>
+      `;
+    }
+
+    // ===== API CALL =====
+    async function generatePlaylist() {
+      // const service = (serviceOverride || document.getElementById('serviceInput').value)
+      //   .trim();
+
+      // const username = (userOverride || document.getElementById('usernameInput').value)
+      //   .trim();
+
+      try {
+        const res = await fetch(GENERATE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            // service,
+            // username
+          })
+        });
+
+        if (res.status === 401) {
+          window.location.href = LOGIN_URL;
+          return;
+        }
+
+        const res_json = await res.json();
+
+        // Backend response determines rendering
+        renderResponse(res_json);
+      } catch (err) {
+        renderResponse(err.message);
+      }
+    }
+
+    document.getElementById('generatePlaylist').addEventListener('click', () => generatePlaylist());
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const ok = await checkAuth();
+      if (!ok) document.getElementById('generatePlaylist').disabled = true;
+    });
+  </script>
+</body>
+</html>
