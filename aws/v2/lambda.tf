@@ -1,11 +1,13 @@
 resource "aws_lambda_function" "twilifyLambda" {
-  s3_bucket     = aws_s3_bucket.twilifyBucket.id
-  s3_key        = "twilify-lambda.zip"
-  function_name = "twilify"
-  role          = aws_iam_role.twilifyLambdaIamRole.arn
-  handler       = "lambda_start.lambda_handler"
-  timeout       = 60
-  runtime       = "python3.14"
+  s3_bucket         = aws_s3_bucket.twilifyBucket.id
+  s3_key            = aws_s3_object.twilifyLambdaZip.key
+  s3_object_version = aws_s3_object.twilifyLambdaZip.version_id
+  source_code_hash  = filebase64sha256(local.twilify_lambda_zip)
+  function_name     = "twilify"
+  role              = aws_iam_role.twilifyLambdaIamRole.arn
+  handler           = "lambda_start.lambda_handler"
+  timeout           = 60
+  runtime           = "python3.14"
   environment {
     variables = {
       COGNITO_REDIRECT_URI = "https://${var.r53_subdomain_name}/api/callback"
@@ -18,15 +20,13 @@ resource "aws_lambda_function" "twilifyLambda" {
       # refresh_token_parameter_name = aws_ssm_parameter.spotify_refresh_token.name
       # refresh_token_kms_key_arn    = aws_kms_key.twilify_kms_key.arn
       # spotify_user                 = var.spotify_user_id
-      bucket_name        = aws_s3_bucket.twilifyBucket.bucket
-      songbank_file_name = var.songbank_file_name
+      bucket_name           = aws_s3_bucket.twilifyBucket.bucket
+      songbank_file_name    = var.songbank_file_name
       playlist_name         = var.spotify_playlist_name
       num_songs_in_playlist = var.num_songs_in_playlist
       debug                 = var.debug
     }
   }
-
-  depends_on = [time_sleep.wait_10_seconds] ## ensure S3 object is completely uploaded
 }
 
 ## Do not attempt to asynchronously invoke lambda more than once - reception should respond with error

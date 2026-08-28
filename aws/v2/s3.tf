@@ -49,9 +49,10 @@ resource "aws_s3_bucket_policy" "twilifyBucketPolicy" {
 }
 
 resource "aws_s3_object" "twilifyLambdaZip" {
-  bucket = aws_s3_bucket.twilifyBucket.id
-  key    = "twilify-lambda.zip"
-  source = "./src/twilify-lambda/twilify-lambda.zip"
+  bucket      = aws_s3_bucket.twilifyBucket.id
+  key         = "twilify-lambda.zip"
+  source      = local.twilify_lambda_zip
+  source_hash = filebase64sha256(local.twilify_lambda_zip)
 }
 
 resource "aws_s3_object" "twilifySongbank" {
@@ -69,12 +70,4 @@ resource "aws_s3_object" "twilifyIndexHtml" {
     FRONTEND_DOMAIN = var.r53_subdomain_name
   })
   content_type = "text/html"
-}
-
-resource "time_sleep" "wait_10_seconds" {
-  depends_on = [
-    aws_s3_object.twilifyLambdaZip
-  ]
-
-  create_duration = "10s"
 }

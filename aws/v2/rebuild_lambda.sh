@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Building twilify zip file from sources..."
-cd src/twilify-lambda/libraries
+cd src/twilify-lambda/new_libs
 rm -f ../twilify-lambda.zip > /dev/null 2>&1
 7z a -r ../twilify-lambda.zip .  > /dev/null 2>&1
 cd ..
